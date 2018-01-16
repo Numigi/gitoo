@@ -1,0 +1,52 @@
+version: 2.0
+
+jobs:
+  "python-2.7":
+    docker:
+      - image: circleci/python:2.7
+    steps:
+      - checkout
+      - run: sudo pip install -r requirements.txt
+      - run:
+          name: Run tests
+          command: pytest tests
+  "python-3.5":
+    docker:
+      - image: circleci/python:3.5
+    steps:
+      - checkout
+      - run: sudo pip install -r requirements.txt
+      - run:
+          name: Run tests
+          command: pytest tests --junit-xml=./log/junit.xml --cov-branch --cov --cov-report xml
+
+      - run:
+          name: Coverage report
+          command: coverage report -m
+
+      - run:
+          name: Codacy Coverage
+          command: |
+            sudo pip install "codacy-coverage>=1.3.10"
+            python-codacy-coverage -r ./coverage.xml
+
+      - store_test_results:
+          path: ./log
+
+  "python-3.6":
+    docker:
+      - image: circleci/python:3.6
+    steps:
+      - checkout
+      - run: sudo pip install -r requirements.txt
+      - run:
+          name: Run tests
+          command: pytest tests
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - "python-2.7"
+      - "python-3.5"
+      - "python-3.6"
