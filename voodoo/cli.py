@@ -4,12 +4,15 @@ Command line interface of the tool
 """
 from __future__ import print_function, absolute_import
 
+import json
 import logging
-import click
+import os
 
+import click
 from voodoo import core
 
 logger = logging.getLogger('voodoo')
+logging.basicConfig()
 logger.setLevel(logging.INFO)
 
 
@@ -23,11 +26,51 @@ def entry_point():
 @click.argument('branch')
 @click.argument('destination')
 def install_one(repo_url, branch, destination):
-    return core.install_third_party_add_on(repo_url, branch, destination)
+    return _install_one(repo_url, branch, destination)
 
 
 @entry_point.command()
 @click.option('--json_file', default=None, type=click.Path(), help='The path where the json file is.')
 @click.option('--destination', default='', type=click.Path(), help='The path where the add-ons should be installed to.')
 def install_all(destination='', json_file=None):
-    return core.install_all_third_party_add_ons(destination, json_file)
+    return _install_all(destination, json_file)
+
+
+def _install_one(repo_url, branch, destination, commit='', patches=None, excludes=None):
+    """ Install a third party odoo add-on
+
+    :param string repo_url: url of the repo that contains the patch.
+    :param string branch: name of the branch to checkout.
+    :param string destination: the folder where the add-on should end up at.
+    :param string commit: Optional commit rev to checkout to. If mentioned, that take over the branch
+    :param list patches: Optional list of patches to apply.
+    """
+    patches = patches or []
+    patches = [core.Patch(**patch) for patch in patches]
+    addon = core.Addon(repo_url, branch, commit=commit, patches=patches, excludes=excludes)
+    addon.install(destination)
+
+
+def _install_all(destination='', json_file=''):
+    """Use the json file to list all the third party Odoo add-ons that will be installed
+    and the patches that should be applied.
+
+    :param string destination: the folder where add-ons should end up at.
+                               Default: pwd/3rd
+    :param string json_file: path to a json file that describe the add-ons to install.
+                             Default: pwd/third_party_addons.json
+    """
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    destination = destination or os.path.join(dir_path, '..', '3rd')
+    json_file = json_file or os.path.join(dir_path, '..', "third_party_addons.json")
+    with open(json_file, "r") as json_data:
+        data = json.load(json_data)
+        for addons in data:
+            _install_one(
+                addons['url'],
+                addons['branch'],
+                os.path.abspath(destination),
+                commit=addons.get('commit'),
+                patches=addons.get('patches'),
+                excludes=addons.get('excludes')
+            )

@@ -1,15 +1,21 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import io
 import os
-import sys
-from shutil import rmtree
+from setuptools import find_packages, setup
+from pip.req import parse_requirements
 
-from setuptools import find_packages, setup, Command
 
-VERSION = (0, 1, 0)
+VERSION = (0, 2, 0)
 __version__ = '.'.join(map(str, VERSION))
+
+
+# parse_requirements() returns generator of pip.req.InstallRequirement objects
+dir_path = os.path.dirname(os.path.realpath(__file__))
+install_reqs = parse_requirements(os.path.join(dir_path, 'requirements.txt'), session='hack')
+
+# reqs is a list of requirement
+REQUIRED = [str(ir.req) for ir in install_reqs]
 
 # Package meta-data.
 NAME = 'voodoo'
