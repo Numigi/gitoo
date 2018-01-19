@@ -49,14 +49,14 @@ def force_move(source, destination):
 class Addon(object):
     """ Struct define the requirements of an add-on for voodoo."""
 
-    def __init__(self, url, branch, commit='', patches=None, excludes=None):
+    def __init__(self, url, branch, commit='', patches=None, exclude_modules=None):
         """ Init
 
         :param string url: url where the add-on lives.
         :param string branch: the branch to check out.
         :param string commit: Optional commit sha.
         :param list patches: list of PatchDefinition
-        :param list excludes: list of name of modules to exclude.
+        :param list exclude_modules: list of name of modules to exclude.
         """
         self.repo = url
         self.branch = branch
@@ -64,8 +64,8 @@ class Addon(object):
         self.patches = patches or []
         if not all(isinstance(patch, Patch) for patch in self.patches):
             raise RuntimeError("Patches should be defined using Patch object.")
-        excludes = excludes or []
-        self.excludes = excludes or []
+        exclude_modules = exclude_modules or []
+        self.exclude_modules = exclude_modules or []
 
     def install(self, destination):
         """ Install a third party odoo add-on
@@ -82,7 +82,7 @@ class Addon(object):
 
             paths = (
                 os.path.join(tmp, path) for path in os.listdir(tmp)
-                if path not in self.excludes
+                if path not in self.exclude_modules
             )
             folders = (
                 path for path in paths if os.path.isdir(path)

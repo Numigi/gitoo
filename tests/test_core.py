@@ -76,12 +76,12 @@ class TestAddon(unittest.TestCase):
         self.assertEqual([], inst.patches)
 
     def test_excludes_optional(self):
-        inst = self.klass(self.url, self.branch, excludes=self.excludes)
-        self.assertEqual(self.excludes, inst.excludes)
+        inst = self.klass(self.url, self.branch, exclude_modules=self.excludes)
+        self.assertEqual(self.excludes, inst.exclude_modules)
 
     def test_excludes_default_value(self):
         inst = self.klass(self.url, self.branch)
-        self.assertEqual([], inst.excludes)
+        self.assertEqual([], inst.exclude_modules)
 
 
 class TestPatch(unittest.TestCase):

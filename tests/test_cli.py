@@ -58,9 +58,10 @@ class TestInstallOne(unittest.TestCase):
             self.destination,
             commit=self.commit_rev,
             patches=self.patches,
-            excludes=['setup']
+            exclude_modules=['setup']
         )
         self.assertFalse(os.path.exists(os.path.join(self.destination, 'setup')))
+
 
 class TestInstallAll(unittest.TestCase):
 
@@ -78,7 +79,8 @@ class TestInstallAll(unittest.TestCase):
                     "branch": "10.0-toponyms_translation",
                     "commit": "40176efdbd2acbd4ae70e548af4a077afed11d5d"
                 }
-            ]
+            ],
+            "exclude_modules": ["setup"]
         }]
         with open(self.filename, 'w') as f:
             json.dump(json_data, f)
