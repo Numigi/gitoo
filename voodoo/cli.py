@@ -25,8 +25,9 @@ def entry_point():
 @click.argument('repo_url')
 @click.argument('branch')
 @click.argument('destination')
-def install_one(repo_url, branch, destination):
-    return _install_one(repo_url, branch, destination)
+@click.option('--base', default=False)
+def install_one(repo_url, branch, destination, base=False):
+    return _install_one(repo_url, branch, destination, base=base)
 
 
 @entry_point.command()
@@ -36,7 +37,7 @@ def install_all(destination='', json_file=None):
     return _install_all(destination, json_file)
 
 
-def _install_one(repo_url, branch, destination, commit='', patches=None, exclude_modules=None):
+def _install_one(repo_url, branch, destination, commit='', patches=None, exclude_modules=None, base=False):
     """ Install a third party odoo add-on
 
     :param string repo_url: url of the repo that contains the patch.
@@ -47,7 +48,8 @@ def _install_one(repo_url, branch, destination, commit='', patches=None, exclude
     """
     patches = patches or []
     patches = [core.Patch(**patch) for patch in patches]
-    addon = core.Addon(repo_url, branch, commit=commit, patches=patches, exclude_modules=exclude_modules)
+    addon_cls = core.Base if base else core.Addon
+    addon = addon_cls(repo_url, branch, commit=commit, patches=patches, exclude_modules=exclude_modules)
     addon.install(destination)
 
 
@@ -72,5 +74,6 @@ def _install_all(destination='', json_file=''):
                 os.path.abspath(destination),
                 commit=addons.get('commit'),
                 patches=addons.get('patches'),
-                exclude_modules=addons.get('excludes')
+                exclude_modules=addons.get('excludes'),
+                base=addons.get('base'),
             )

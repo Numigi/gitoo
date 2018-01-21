@@ -92,6 +92,40 @@ class Addon(object):
                 force_move(folder, destination)
 
 
+class Base(Addon):
+    """ Struct define the odoo base repository for voodoo."""
+
+    def install(self, destination):
+        """ Install the odoo base code.
+
+        :param string destination: the folder where odoo should end up at.
+        """
+        logger.info(
+            "Installing %s@%s to %s",
+            self.repo, self.commit if self.commit else self.branch, destination
+        )
+        with temp_repo(self.repo, self.branch, self.commit) as tmp:
+            for patch in self.patches:
+                patch.apply(tmp)
+
+            tmp_addons = os.path.join(tmp, 'addons')
+            tmp_odoo = os.path.join(tmp, 'odoo')
+            tmp_odoo_addons = os.path.join(tmp, 'odoo/addons')
+
+            paths = (
+                os.path.join(tmp_addons, path) for path in os.listdir(tmp_addons)
+                if path not in self.exclude_modules
+            )
+            folders = (
+                path for path in paths if os.path.isdir(path)
+            )
+
+            for folder in folders:
+                force_move(folder, tmp_odoo_addons)
+
+            force_move(tmp_odoo, destination)
+
+
 class Patch(object):
 
     def __init__(self, url, branch, commit):
