@@ -77,53 +77,61 @@ class Addon(object):
             self.repo, self.commit if self.commit else self.branch, destination
         )
         with temp_repo(self.repo, self.branch, self.commit) as tmp:
-            for patch in self.patches:
-                patch.apply(tmp)
+            self._apply_patches(tmp)
+            self._move_modules(tmp, destination)
 
-            paths = (
-                os.path.join(tmp, path) for path in os.listdir(tmp)
-                if path not in self.exclude_modules
-            )
-            folders = (
-                path for path in paths if os.path.isdir(path)
-            )
+    def _apply_patches(self, temp_repo):
+        """Apply patches to the repository.
 
-            for folder in folders:
-                force_move(folder, destination)
+        :param string temp_repo: the folder containing the code.
+        """
+        for patch in self.patches:
+            patch.apply(temp_repo)
+
+    def _move_modules(self, temp_repo, destination):
+        """Move modules froom the temp directory to the destination.
+
+        :param string temp_repo: the folder containing the code.
+        :param string destination: the folder where the add-on should end up at.
+        """
+        folders = self._get_module_folders(temp_repo)
+        for folder in folders:
+            force_move(folder, destination)
+
+    def _get_module_folders(self, temp_repo):
+        """Get a list of module paths contained in a temp directory.
+
+        :param string temp_repo: the folder containing the modules.
+        """
+        paths = (
+            os.path.join(temp_repo, path) for path in os.listdir(temp_repo)
+            if path not in self.exclude_modules
+        )
+        return (path for path in paths if os.path.isdir(path))
 
 
 class Base(Addon):
     """ Struct define the odoo base repository for voodoo."""
 
-    def install(self, destination):
-        """ Install the odoo base code.
+    def _move_modules(self, temp_repo, destination):
+        """Move odoo modules from the temp directory to the destination.
 
-        :param string destination: the folder where odoo should end up at.
+        This step is different from a standard repository. In the base code
+        of Odoo, the modules are contained in a addons folder at the root
+        of the git repository. However, when deploying the application,
+        those modules are placed inside the folder odoo/addons.
+
+        1- Move modules from addons/ to odoo/addons/ (with the base module).
+        2- Move the whole odoo folder to the destination location.
         """
-        logger.info(
-            "Installing %s@%s to %s",
-            self.repo, self.commit if self.commit else self.branch, destination
-        )
-        with temp_repo(self.repo, self.branch, self.commit) as tmp:
-            for patch in self.patches:
-                patch.apply(tmp)
+        tmp_addons = os.path.join(temp_repo, 'addons')
+        tmp_odoo_addons = os.path.join(temp_repo, 'odoo/addons')
+        folders = self._get_module_folders(tmp_addons)
+        for folder in folders:
+            force_move(folder, tmp_odoo_addons)
 
-            tmp_addons = os.path.join(tmp, 'addons')
-            tmp_odoo = os.path.join(tmp, 'odoo')
-            tmp_odoo_addons = os.path.join(tmp, 'odoo/addons')
-
-            paths = (
-                os.path.join(tmp_addons, path) for path in os.listdir(tmp_addons)
-                if path not in self.exclude_modules
-            )
-            folders = (
-                path for path in paths if os.path.isdir(path)
-            )
-
-            for folder in folders:
-                force_move(folder, tmp_odoo_addons)
-
-            force_move(tmp_odoo, destination)
+        tmp_odoo = os.path.join(temp_repo, 'odoo')
+        force_move(tmp_odoo, destination)
 
 
 class Patch(object):
