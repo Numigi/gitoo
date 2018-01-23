@@ -68,20 +68,36 @@ class TestInstallAll(unittest.TestCase):
     def setUp(self):
         super(TestInstallAll, self).setUp()
         self.func = cli._install_all
-        _ , self.filename = tempfile.mkstemp()
-        json_data = [{
-            "url": "https://github.com/OCA/l10n-canada",
-            "branch": "10.0",
-            "commit": "9c1b75a837c0f15e127ee656e871b78db1407505",
-            "patches": [
-                {
-                    "url": "https://github.com/savoirfairelinux/l10n-canada",
-                    "branch": "10.0-toponyms_translation",
-                    "commit": "40176efdbd2acbd4ae70e548af4a077afed11d5d"
-                }
-            ],
-            "exclude_modules": ["setup"]
-        }]
+        _, self.filename = tempfile.mkstemp()
+        json_data = [
+            {
+                "url": "https://github.com/odoo/odoo",
+                "branch": "10.0",
+                "commit": "ae6037e17acdc66cf28504d9791eb3cd698efaa6",
+                "patches": [
+                    {
+                        "url": "https://github.com/savoirfairelinux/odoo",
+                        "branch": "10.0_ddufresne_fix_purchase",
+                        "commit": "5f9dd4d2861eeba40cf81e658b99a83d9f88d6e7"
+                    }
+                ],
+                "exclude_modules": ["web_tour"],
+                "base": True
+            },
+            {
+                "url": "https://github.com/OCA/l10n-canada",
+                "branch": "10.0",
+                "commit": "9c1b75a837c0f15e127ee656e871b78db1407505",
+                "patches": [
+                    {
+                        "url": "https://github.com/savoirfairelinux/l10n-canada",
+                        "branch": "10.0-toponyms_translation",
+                        "commit": "40176efdbd2acbd4ae70e548af4a077afed11d5d"
+                    }
+                ],
+                "exclude_modules": ["setup"]
+            }
+        ]
         with open(self.filename, 'w') as f:
             json.dump(json_data, f)
         self.destination = tempfile.mkdtemp()
@@ -98,4 +114,3 @@ class TestInstallAll(unittest.TestCase):
             json_file=self.filename
         )
         self.assertTrue(os.listdir(self.destination))
-

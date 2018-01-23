@@ -7,6 +7,13 @@ jobs:
     steps:
       - checkout
       - run: sudo pip install -r requirements.txt
+
+      - run:
+          name: Git Configuration
+          command: |
+            git config --global user.email "root@localhost"
+            git config --global user.name "Voodoo"
+
       - run:
           name: Run tests
           command: pytest tests
@@ -16,6 +23,13 @@ jobs:
     steps:
       - checkout
       - run: sudo pip install -r requirements.txt
+
+      - run:
+          name: Git Configuration
+          command: |
+            git config --global user.email "root@localhost"
+            git config --global user.name "Voodoo"
+
       - run:
           name: Run tests
           command: pytest tests --junit-xml=./log/junit.xml --cov-branch --cov --cov-report xml
@@ -46,6 +60,13 @@ jobs:
     steps:
       - checkout
       - run: sudo pip install -r requirements.txt
+
+      - run:
+          name: Git Configuration
+          command: |
+            git config --global user.email "root@localhost"
+            git config --global user.name "Voodoo"
+
       - run:
           name: Run tests
           command: pytest tests
