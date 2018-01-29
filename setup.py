@@ -1,49 +1,33 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os
 from setuptools import find_packages, setup
-from pip.req import parse_requirements
+from voodoo import manifest
 
+try:
+    from pipenv.project import Project
+    from pipenv.utils import convert_deps_to_pip
+except ImportError:
+    raise ImportError(
+        "`pipenv` is required to install {}. Please run `pip install pipenv` then retry.".format(manifest.name)
+    )
 
-VERSION = (0, 3, 0)
-__version__ = '.'.join(map(str, VERSION))
-
-
-# parse_requirements() returns generator of pip.req.InstallRequirement objects
-dir_path = os.path.dirname(os.path.realpath(__file__))
-install_reqs = parse_requirements(os.path.join(dir_path, 'requirements.txt'), session='hack')
-
-# reqs is a list of requirement
-REQUIRED = [str(ir.req) for ir in install_reqs]
-
-# Package meta-data.
-NAME = 'voodoo'
-DESCRIPTION = 'Odoo third party addons installer.'
-URL = 'https://github.com/foutoucour/voodoo'
-EMAIL = 'kender@gmail.com'
-AUTHOR = 'Jordi Riera'
-
-# What packages are required for this module to be executed?
-REQUIRED = [
-    'GitPython>=2.1.8', 'click>=6.7'
-]
-
-here = os.path.abspath(os.path.dirname(__file__))
+pfile = Project(chdir=False).parsed_pipfile
+install_reqs = convert_deps_to_pip(pfile['packages'], r=False)
 
 setup(
-    name=NAME,
-    version=__version__,
-    description=DESCRIPTION,
-    author=AUTHOR,
-    author_email=EMAIL,
-    url=URL,
+    name=manifest.name,
+    version=manifest.version,
+    description=manifest.description,
+    author=manifest.author,
+    author_email=manifest.email,
+    url=manifest.url,
     packages=find_packages(exclude=('tests',)),
     entry_points='''
         [console_scripts]
         voodoo=voodoo.cli:entry_point
     ''',
-    install_requires=REQUIRED,
+    install_requires=install_reqs,
     include_package_data=True,
     license='MIT',
     classifiers=[
@@ -55,7 +39,6 @@ setup(
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: Implementation :: CPython',
     ],
 )

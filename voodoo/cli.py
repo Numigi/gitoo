@@ -10,6 +10,7 @@ import os
 
 import click
 from voodoo import core
+from voodoo import manifest
 
 logger = logging.getLogger('voodoo')
 logging.basicConfig()
@@ -19,6 +20,12 @@ logger.setLevel(logging.INFO)
 @click.group()
 def entry_point():
     pass
+
+
+@entry_point.command()
+def version():
+    print(manifest.version)
+    return
 
 
 @entry_point.command()

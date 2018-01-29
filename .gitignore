@@ -102,3 +102,6 @@ ENV/
 
 /.idea/
 /log/
+
+# Pipfile.lock should be not include in packages
+Pipfile.lock
