@@ -9,6 +9,11 @@ import logging
 import os
 
 import click
+from click_didyoumean import DYMMixin
+from click_help_colors import HelpColorsGroup
+
+import crayons
+
 from voodoo import core
 from voodoo import manifest
 
@@ -17,15 +22,18 @@ logging.basicConfig()
 logger.setLevel(logging.INFO)
 
 
-@click.group()
-def entry_point():
+class AllGroup(DYMMixin, HelpColorsGroup, click.Group):  # pylint: disable=too-many-public-methods
     pass
 
 
-@entry_point.command()
-def version():
-    print(manifest.version)
-    return
+@click.group(
+    cls=AllGroup,
+    help_headers_color='yellow',
+    help_options_color='green'
+    )
+@click.version_option(prog_name=crayons.white(manifest.name, bold=True), version=manifest.version)
+def entry_point():
+    pass
 
 
 @entry_point.command()

@@ -38,7 +38,7 @@ run_cli: &run_cli
   command: |
     pipenv install pipenv
     pipenv run python setup.py install
-    pipenv run voodoo version
+    pipenv run voodoo --version
 
 pipenv_check: &pipenv_check
   name: Check for security vulnerabilities
