@@ -18,7 +18,9 @@ run_tests: &run_tests
 
 coverage_report: &coverage_report
   name: Coverage report
-  command: pipenv run coverage report -m
+  command: |
+    pipenv install coverage
+    pipenv run coverage report -m
 
 coverage_report_codacy: &coverage_report_codacy
   name: Codacy Coverage

@@ -27,7 +27,6 @@ setup(
     tests_require=[
         'pytest',
         'pytest-cov',
-        'codacy-coverage',
         'pytest-random-order',
     ],
     include_package_data=True,
