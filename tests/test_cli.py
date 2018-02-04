@@ -107,10 +107,10 @@ class TestInstallAll(unittest.TestCase):
         if os.path.exists(self.destination):
             shutil.rmtree(self.destination)
 
-    # def test_install_all(self):
-    #     self.assertFalse(os.listdir(self.destination))
-    #     self.func(
-    #         destination=self.destination,
-    #         json_file=self.filename
-    #     )
-    #     self.assertTrue(os.listdir(self.destination))
+    def test_install_all(self):
+        self.assertFalse(os.listdir(self.destination))
+        self.func(
+            destination=self.destination,
+            json_file=self.filename
+        )
+        self.assertTrue(os.listdir(self.destination))
