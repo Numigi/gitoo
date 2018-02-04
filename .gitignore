@@ -103,5 +103,6 @@ ENV/
 /.idea/
 /log/
 
-# Pipfile.lock should be not include in packages
+# Pipfile should be not include in packages in favor of setup.py
+Pipfile
 Pipfile.lock

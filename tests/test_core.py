@@ -3,7 +3,7 @@ import unittest
 import git
 import functools
 import os
-from voodoo import core
+from src import core
 
 
 class TestTempRepo(unittest.TestCase):

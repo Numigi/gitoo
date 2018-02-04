@@ -7,7 +7,7 @@ import shutil
 import contextlib
 import git
 
-logger = logging.getLogger('voodoo-definition')
+logger = logging.getLogger('src-definition')
 logger.setLevel(logging.INFO)
 
 
@@ -47,7 +47,7 @@ def force_move(source, destination):
 
 
 class Addon(object):
-    """ Struct define the requirements of an add-on for voodoo."""
+    """ Struct define the requirements of an add-on for src."""
 
     def __init__(self, url, branch, commit='', patches=None, exclude_modules=None):
         """ Init
@@ -111,7 +111,7 @@ class Addon(object):
 
 
 class Base(Addon):
-    """ Struct define the odoo base repository for voodoo."""
+    """ Struct define the odoo base repository for src."""
 
     def _move_modules(self, temp_repo, destination):
         """Move odoo modules from the temp directory to the destination.

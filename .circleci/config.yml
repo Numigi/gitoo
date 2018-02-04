@@ -4,21 +4,17 @@ requirements: &requirements
   name: Install requirements
   command: |
     sudo pip install "pipenv>=9.0.3"
-    pipenv install --dev
+    pipenv install -e .
 
 git_config: &git_config
   name: Git Configuration
   command: |
     git config --global user.email "root@localhost"
-    git config --global user.name "Voodoo"
+    git config --global user.name "gitoo"
 
 run_tests: &run_tests
   name: Run tests
-  command: pipenv run pytest -v tests
-
-run_test_with_coverage: &run_tests_with_coverage
-  name: Run test with coveage
-  command: pipenv run pytest -v tests --junit-xml=./log/junit.xml --cov-branch --cov --cov-report xml
+  command: pipenv run python setup.py test
 
 coverage_report: &coverage_report
   name: Coverage report
@@ -27,6 +23,7 @@ coverage_report: &coverage_report
 coverage_report_codacy: &coverage_report_codacy
   name: Codacy Coverage
   command: |
+    pipenv install codacy-coverage
     pipenv run python-codacy-coverage -r ./coverage.xml
 
 rm_virtualenv: &rm_virtualenv
@@ -36,9 +33,8 @@ rm_virtualenv: &rm_virtualenv
 run_cli: &run_cli
   name: Installation
   command: |
-    pipenv install pipenv
-    pipenv run python setup.py install
-    pipenv run voodoo --version
+    pipenv install .
+    pipenv run gitoo --version
 
 pipenv_check: &pipenv_check
   name: Check for security vulnerabilities
@@ -57,11 +53,9 @@ jobs:
       - run:
           <<: *git_config
       - run:
-          <<: *run_tests_with_coverage
+          <<: *run_tests
       - run:
           <<: *coverage_report
-      - run:
-          <<: *coverage_report_codacy
       - run:
           <<: *rm_virtualenv
       - run:
@@ -82,6 +76,8 @@ jobs:
           <<: *git_config
       - run:
           <<: *run_tests
+      - run:
+          <<: *coverage_report
       - run:
           <<: *rm_virtualenv
       - run:
