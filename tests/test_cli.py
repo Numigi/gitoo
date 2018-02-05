@@ -4,7 +4,7 @@ import shutil
 import tempfile
 import unittest
 
-from voodoo import cli
+from src import cli
 
 
 class TestInstallOne(unittest.TestCase):
