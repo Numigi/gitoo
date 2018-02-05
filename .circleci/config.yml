@@ -59,6 +59,8 @@ jobs:
       - run:
           <<: *coverage_report
       - run:
+          <<: *coverage_report_codacy
+      - run:
           <<: *rm_virtualenv
       - run:
           <<: *run_cli
