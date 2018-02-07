@@ -4,7 +4,7 @@ Command line interface of the tool
 """
 from __future__ import print_function, absolute_import
 
-import json
+import yaml
 import logging
 import os
 
@@ -43,10 +43,10 @@ def install_one(repo_url, branch, destination, base=False):
 
 
 @entry_point.command()
-@click.option('--json_file', default=None, type=click.Path(), help='The path where the json file is.')
+@click.option('--conf_file', default=None, type=click.Path(), help='The path where the conf file is.')
 @click.option('--destination', default='', type=click.Path(), help='The path where the add-ons should be installed to.')
-def install_all(destination='', json_file=None):
-    return _install_all(destination, json_file)
+def install_all(destination='', conf_file=None):
+    return _install_all(destination, conf_file)
 
 
 def _install_one(repo_url, branch, destination, commit='', patches=None, exclude_modules=None, base=False):
@@ -65,20 +65,20 @@ def _install_one(repo_url, branch, destination, commit='', patches=None, exclude
     addon.install(destination)
 
 
-def _install_all(destination='', json_file=''):
-    """Use the json file to list all the third party Odoo add-ons that will be installed
+def _install_all(destination='', conf_file=''):
+    """Use the conf file to list all the third party Odoo add-ons that will be installed
     and the patches that should be applied.
 
     :param string destination: the folder where add-ons should end up at.
                                Default: pwd/3rd
-    :param string json_file: path to a json file that describe the add-ons to install.
-                             Default: pwd/third_party_addons.json
+    :param string conf_file: path to a conf file that describe the add-ons to install.
+                             Default: pwd/third_party_addons.yaml
     """
     dir_path = os.path.dirname(os.path.realpath(__file__))
     destination = destination or os.path.join(dir_path, '..', '3rd')
-    json_file = json_file or os.path.join(dir_path, '..', "third_party_addons.json")
-    with open(json_file, "r") as json_data:
-        data = json.load(json_data)
+    conf_file = conf_file or os.path.join(dir_path, '..', "third_party_addons.yaml")
+    with open(conf_file, "r") as conf_data:
+        data = yaml.load(conf_data)
         for addons in data:
             _install_one(
                 addons['url'],
