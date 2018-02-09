@@ -1,4 +1,4 @@
-import json
+import yaml
 import os
 import shutil
 import tempfile
@@ -69,7 +69,7 @@ class TestInstallAll(unittest.TestCase):
         super(TestInstallAll, self).setUp()
         self.func = cli._install_all
         _, self.filename = tempfile.mkstemp()
-        json_data = [
+        yaml_data = [
             {
                 "url": "https://github.com/odoo/odoo",
                 "branch": "10.0",
@@ -99,7 +99,7 @@ class TestInstallAll(unittest.TestCase):
             }
         ]
         with open(self.filename, 'w') as f:
-            json.dump(json_data, f)
+            yaml.dump(yaml_data, f)
         self.destination = tempfile.mkdtemp()
 
     def tearDown(self):
@@ -111,6 +111,6 @@ class TestInstallAll(unittest.TestCase):
         self.assertFalse(os.listdir(self.destination))
         self.func(
             destination=self.destination,
-            json_file=self.filename
+            conf_file=self.filename
         )
         self.assertTrue(os.listdir(self.destination))

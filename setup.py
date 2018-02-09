@@ -23,6 +23,7 @@ setup(
         'click-didyoumean',
         'crayons',
         'click-help-colors',
+        'pyyaml',
     ],
     tests_require=[
         'pytest',
