@@ -62,6 +62,22 @@ class TestInstallOne(unittest.TestCase):
         )
         self.assertFalse(os.path.exists(os.path.join(self.destination, 'setup')))
 
+    def test_patch_with_no_commit(self):
+        self.assertFalse(os.listdir(self.destination))
+        self.func(
+            self.repo_url,
+            self.branch,
+            self.destination,
+            commit=self.commit_rev,
+            patches=[
+                {
+                    "url": "https://github.com/savoirfairelinux/l10n-canada",
+                    "branch": "10.0-toponyms_translation",
+                }
+            ]
+        )
+        self.assertTrue(os.listdir(self.destination))
+
 
 class TestInstallAll(unittest.TestCase):
 
