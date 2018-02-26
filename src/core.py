@@ -136,7 +136,7 @@ class Base(Addon):
 
 class Patch(object):
 
-    def __init__(self, url, branch, commit):
+    def __init__(self, url, branch, commit=None):
         """ Init
 
         :param string url: url where the add-on lives.
@@ -153,12 +153,13 @@ class Patch(object):
         :param string folder: path of the folder where is the git repo cloned at.
         :raise: RuntimeError if the patch could not be applied.
         """
-        logger.info("Apply Patch %s@%s (commit %s)", self.url, self.branch, self.commit)
         remote_name = 'patch'
+        commit = self.commit or "%s/%s" % (remote_name, self.branch)
+        logger.info("Apply Patch %s@%s (commit %s)", self.url, self.branch, commit)
         commands = [
             "git remote add {} {}".format(remote_name, self.url),
             "git fetch {} {}".format(remote_name, self.branch),
-            'git merge {} -m "patch"'.format(self.commit),
+            'git merge {} -m "patch"'.format(commit),
             "git remote remove {}".format(remote_name),
         ]
         for command in commands:
