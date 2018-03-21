@@ -80,11 +80,6 @@ class TestInstallBase(unittest.TestCase):
                         "branch": "10.0-ddufresne-fix_aged_partner_balance",
                         "commit": "97929246ca0c7df24b4d46adc27d440712687b5a"
                     },
-                    {
-                        "url": "https://github.com/ddufresne/odoo",
-                        "branch": "10.0-ddufresne-fix_account_move_line",
-                        "commit": "8bca051a113655f6acfbec13e720c4ff6dee6485"
-                    },
                 ],
                 "exclude_modules": ["web_tour"],
                 "base": True
@@ -148,6 +143,6 @@ class TestInstallThirdParty(unittest.TestCase):
         self.assertTrue(os.listdir(self.destination))
 
     def test_destination_folder_does_not_exist(self):
-        destination = '%(destination)s/addons'.format(destination=self.destination)
+        destination = os.path.join(self.destination, 'addons')
         with self.assertRaises(RuntimeError):
             self.func(destination=destination, conf_file=self.filename)

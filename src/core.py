@@ -41,7 +41,7 @@ def force_move(source, destination):
     """
     if not os.path.exists(destination):
         raise RuntimeError(
-            'The code could not be moved to %(destination)s '
+            'The code could not be moved to {destination} '
             'because the folder does not exist'.format(destination=destination))
 
     destination_folder = os.path.join(destination, os.path.split(source)[-1])
