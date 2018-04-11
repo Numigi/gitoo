@@ -24,7 +24,8 @@ setup(
         'crayons',
         'click-help-colors',
         'pyyaml',
-        'pystache',
+        # force the version of pystache as we use private variables of the lib.
+        'pystache==0.5.4',
     ],
     tests_require=[
         'pytest',
