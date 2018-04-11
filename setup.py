@@ -29,6 +29,7 @@ setup(
         'pytest',
         'pytest-cov',
         'pytest-random-order',
+        'mock',
     ],
     include_package_data=True,
     license='MIT',

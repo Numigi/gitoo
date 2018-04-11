@@ -3,6 +3,9 @@ import unittest
 import git
 import functools
 import os
+
+import mock
+
 from src import core
 
 
@@ -98,3 +101,55 @@ class TestPatch(unittest.TestCase):
         self.assertEqual(self.url, inst.url)
         self.assertEqual(self.branch, inst.branch)
         self.assertEqual(self.commit_rev, inst.commit)
+
+
+class TestGetUrl(unittest.TestCase):
+
+    def setUp(self):
+        super(TestGetUrl, self).setUp()
+        self.func = core.parse_url
+
+    def test_no_token(self):
+        """
+        When the url is a public url
+        Then the public url is returned as it.
+        """
+        url = "https://github.com/OCA/website"
+        self.assertEqual(url, self.func(url), msg='no token passed, the url should be the same without change.')
+
+    def test_github_token_provided(self):
+        """
+        When the url is a private url with the token hard coded in the string
+        Then the private url is returned as it
+        """
+        url_with_token = "https://7777@github.com/numigi/aeroo_reports"
+        self.assertEqual(url_with_token, self.func(url_with_token),
+                         msg='no token passed, the url should be the same without change.')
+
+    def test_with_env_variable(self):
+        """
+        Given the environment variable X is set
+        When the environment variable X is mentioned in the url, using the mustache syntaxe
+        Then the environment variable value is set in the url
+        """
+        env_variable_name = "GIT_TOKEN"
+        env_variable = "6666"
+        # use %s syntax here to avoid awkward string with multiple {{ }} just to have the right string
+        # it makes it easier to read this way.
+        url_template = "https://{{%s}}@github.com/numigi/aeroo_reports" % env_variable_name
+        expected = "https://{}@github.com/numigi/aeroo_reports".format(env_variable)
+
+        with mock.patch.dict(os.environ,{env_variable_name:env_variable}):
+            self.assertEqual(expected, self.func(url_template))
+
+    def test_with_env_variable_not_defined(self):
+        """
+        Given the environment variable X is not set
+        When the environment variable X is mentioned in the url, using the mustache syntaxe
+        Then the system raise a KeyError
+        """
+        env_variable_name = "GIT_TOKEN"
+        url_template = "https://{{%s}}@github.com/numigi/aeroo_reports" % env_variable_name
+
+        with self.assertRaises(KeyError):
+            self.func(url_template)

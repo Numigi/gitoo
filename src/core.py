@@ -5,9 +5,12 @@ import subprocess
 import tempfile
 import shutil
 import contextlib
+
+import pystache
+from pystache.parser import _EscapeNode  # pylint: disable=protected-access
 import git
 
-logger = logging.getLogger('src-definition')
+logger = logging.getLogger('gitoo-definition')
 logger.setLevel(logging.INFO)
 
 
@@ -63,7 +66,7 @@ class Addon(object):
         :param list patches: list of PatchDefinition
         :param list exclude_modules: list of name of modules to exclude.
         """
-        self.repo = url
+        self.repo = parse_url(url)
         self.branch = branch
         self.commit = commit
         self.patches = patches or []
@@ -148,7 +151,7 @@ class Patch(object):
         :param string branch: the branch to check out.
         :param string commit: Optional commit sha.
         """
-        self.url = url
+        self.url = parse_url(url)
         self.branch = branch
         self.commit = commit
 
@@ -177,3 +180,16 @@ class Patch(object):
                 msg = "Could not apply patch from {}@{}: {}. Error: {}".format(self.url, self.branch, command, stream_data)
                 logger.error(msg)
                 raise RuntimeError(msg)
+
+
+def parse_url(url):
+    """ Parse the given url and update it with environment value if required.
+
+    :param basestring url:
+    :rtype: basestring
+    :raise: KeyError if environment variable is needed but not found.
+    """
+    parsed = pystache.parse(url)
+    # pylint: disable=protected-access
+    variables = (element.key for element in parsed._parse_tree if isinstance(element, _EscapeNode))
+    return pystache.render(url, {variable: os.environ[variable] for variable in variables})
