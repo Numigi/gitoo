@@ -106,3 +106,6 @@ ENV/
 # Pipfile should be not include in packages in favor of setup.py
 Pipfile
 Pipfile.lock
+
+/tests/log/
+/.pytest_cache/

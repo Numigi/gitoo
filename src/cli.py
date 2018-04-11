@@ -14,7 +14,7 @@ from click_help_colors import HelpColorsGroup
 
 from src import core
 
-logger = logging.getLogger('src')
+logger = logging.getLogger('gitoo')
 logging.basicConfig()
 logger.setLevel(logging.INFO)
 

@@ -24,11 +24,14 @@ setup(
         'crayons',
         'click-help-colors',
         'pyyaml',
+        # force the version of pystache as we use private variables of the lib.
+        'pystache==0.5.4',
     ],
     tests_require=[
         'pytest',
         'pytest-cov',
         'pytest-random-order',
+        'mock',
     ],
     include_package_data=True,
     license='MIT',
