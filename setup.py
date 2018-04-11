@@ -24,6 +24,7 @@ setup(
         'crayons',
         'click-help-colors',
         'pyyaml',
+        'pystache',
     ],
     tests_require=[
         'pytest',
