@@ -103,10 +103,10 @@ class TestPatch(unittest.TestCase):
         self.assertEqual(self.commit_rev, inst.commit)
 
 
-class TestGetUrl(unittest.TestCase):
+class TestParseUrl(unittest.TestCase):
 
     def setUp(self):
-        super(TestGetUrl, self).setUp()
+        super(TestParseUrl, self).setUp()
         self.func = core.parse_url
 
     def test_no_token(self):

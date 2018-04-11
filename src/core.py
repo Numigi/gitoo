@@ -1,4 +1,4 @@
-from __future__ import print_function, absolute_import
+from __future__ import print_function, absolute_import, unicode_literals
 import os
 import logging
 import subprocess
@@ -189,6 +189,13 @@ def parse_url(url):
     :rtype: basestring
     :raise: KeyError if environment variable is needed but not found.
     """
+    # the url has to be a unicode by pystache's design, but the unicode concept has been rewamped in py3
+    # we use a try except to make the code compatible with py2 and py3
+    try:
+        url = unicode(url)
+    except NameError:
+        url = url
+
     parsed = pystache.parse(url)
     # pylint: disable=protected-access
     variables = (element.key for element in parsed._parse_tree if isinstance(element, _EscapeNode))
