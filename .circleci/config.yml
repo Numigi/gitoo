@@ -45,7 +45,7 @@ pipenv_check: &pipenv_check
   command: pipenv check
 
 jobs:
-  "python-3.5 (Odoo 11+)":
+  python3:
     docker:
       - image: circleci/python:3.5
     steps:
@@ -69,7 +69,7 @@ jobs:
       - store_test_results:
           path: ./log
 
-  "python-2.7 (Odoo 10-)":
+  python2:
     docker:
       - image: circleci/python:2.7
     steps:
