@@ -89,10 +89,44 @@ jobs:
       - run:
           <<: *run_cli
 
+  deploy:
+    docker:
+      - image: circleci/python:3
+    steps:
+      - checkout
+      - run:
+          <<: *requirements
+      - run:
+          name: Init .pypirc
+          command: |
+            echo -e "[pypi]" >> ~/.pypirc
+            echo -e "username = $PYPI_USERNAME" >> ~/.pypirc
+            echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
+
+      - run:
+          name: Make Package
+          command: python setup.py sdist bdist_wheel
+
+      - run:
+          name: Upload to Pypi using Twine
+          command: |
+            pipenv install twine
+            pipenv run twine upload dist/*
 
 workflows:
   version: 2
   build:
     jobs:
-      - "python-2.7 (Odoo 10-)"
       - "python-3.5 (Odoo 11+)"
+          filters:
+            tags:
+              only: /.*/
+      - "python-2.7 (Odoo 10-)"
+      - deploy:
+          requires:
+            - "python-3.5 (Odoo 11+)"
+          filters:
+            tags:
+              only: /[0-9]+(\.[0-9]+)*/
+            branches:
+              ignore: /.*/
