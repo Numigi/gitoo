@@ -117,14 +117,14 @@ workflows:
   version: 2
   build:
     jobs:
-      - "python-3.5 (Odoo 11+)"
+      - python3:
           filters:
             tags:
               only: /.*/
-      - "python-2.7 (Odoo 10-)"
+      - python2:
       - deploy:
           requires:
-            - "python-3.5 (Odoo 11+)"
+            - python3
           filters:
             tags:
               only: /[0-9]+(\.[0-9]+)*/
