@@ -121,7 +121,7 @@ workflows:
           filters:
             tags:
               only: /.*/
-      - python2:
+      - python2
       - deploy:
           requires:
             - python3
