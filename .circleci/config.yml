@@ -38,6 +38,8 @@ run_cli: &run_cli
     pipenv install .
     pipenv run gitoo --version
 
+# broken with pip 10
+# https://github.com/pypa/pipenv/issues/1996
 pipenv_check: &pipenv_check
   name: Check for security vulnerabilities
   command: pipenv check
@@ -50,8 +52,8 @@ jobs:
       - checkout
       - run:
           <<: *requirements
-      - run:
-          <<: *pipenv_check
+#      - run:
+#          <<: *pipenv_check
       - run:
           <<: *git_config
       - run:
@@ -74,8 +76,8 @@ jobs:
       - checkout
       - run:
           <<: *requirements
-      - run:
-          <<: *pipenv_check
+#      - run:
+#          <<: *pipenv_check
       - run:
           <<: *git_config
       - run:
