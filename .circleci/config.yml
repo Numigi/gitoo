@@ -52,8 +52,6 @@ jobs:
       - checkout
       - run:
           <<: *requirements
-#      - run:
-#          <<: *pipenv_check
       - run:
           <<: *git_config
       - run:
@@ -76,8 +74,6 @@ jobs:
       - checkout
       - run:
           <<: *requirements
-#      - run:
-#          <<: *pipenv_check
       - run:
           <<: *git_config
       - run:
