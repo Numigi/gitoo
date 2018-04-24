@@ -34,15 +34,6 @@ def entry_point():
 
 
 @entry_point.command()
-@click.argument('repo_url')
-@click.argument('branch')
-@click.argument('destination')
-@click.option('--base', default=False)
-def install_one(repo_url, branch, destination, base=False):
-    return _install_one(repo_url, branch, destination, base=base)
-
-
-@entry_point.command()
 @click.option('--conf_file', default=None, type=click.Path(), help='The path where the conf file is.')
 @click.option('--destination', default='', type=click.Path(), help='The path where the add-ons should be installed to.')
 def install_all(destination='', conf_file=None):
