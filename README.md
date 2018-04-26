@@ -41,12 +41,11 @@ The parameter defaults to `./3rd/`
 
 Gitoo uses a config file, in yml, to know what add-ons should be downloaded and how.
 
-A typical config file would looks like:
+**Download odoo add-ons**
+
+A typical config file to get odoo add-ons would look like:
+
 ``` yaml
-- url: https://github.com/odoo/odoo
-  branch: "11.0"
-  base: true
-  
 - url: https://github.com/OCA/website
   branch: 11.0
   commit: 899a2219d35a259422ce916ba99947108bc3cc3c
@@ -60,9 +59,18 @@ A typical config file would looks like:
       commit: 4af0fc7c353864b573dc4543c2f8ae59d168ba69
 ```
 
-* The first section downloads odoo from the branch 11.0. The argument base informs gitoo that the repo is actually 
-the code of the application, not a simple add-on
-* The second section downloads the code of the repo website from the branch 11.0. It also forces
+* The first section downloads the code of the repo website from the branch 11.0. It also forces
 to be at a precise commit
-* The third section shows how to apply patches
+* The second section shows how to apply patches
+
+**Special cas of Odoo source code**
+
+Gitoo allows to manage the source code of odoo almost like any other code:
+``` yaml
+- url: https://github.com/odoo/odoo
+  branch: "11.0"
+  base: true
+```
+* The code downloads odoo from the branch 11.0. The argument base informs gitoo that the repo is actually 
+the code of the application, not a simple add-on.
 
