@@ -57,7 +57,10 @@ def force_move(source, destination):
 class Addon(object):
     """ Struct define the requirements of an add-on for src."""
 
-    def __init__(self, url, branch, commit='', patches=None, exclude_modules=None):
+    def __init__(
+        self, url, branch, commit='', patches=None,
+        exclude_modules=None, include_modules=None
+    ):
         """ Init
 
         :param string url: url where the add-on lives.
@@ -65,6 +68,7 @@ class Addon(object):
         :param string commit: Optional commit sha.
         :param list patches: list of PatchDefinition
         :param list exclude_modules: list of name of modules to exclude.
+        :param list include_modules: list of name of modules to include.
         """
         self.repo = parse_url(url)
         self.branch = branch
@@ -72,8 +76,8 @@ class Addon(object):
         self.patches = patches or []
         if not all(isinstance(patch, Patch) for patch in self.patches):
             raise RuntimeError("Patches should be defined using Patch object.")
-        exclude_modules = exclude_modules or []
         self.exclude_modules = exclude_modules or []
+        self.include_modules = include_modules
 
     def install(self, destination):
         """ Install a third party odoo add-on
@@ -113,9 +117,18 @@ class Addon(object):
         """
         paths = (
             os.path.join(temp_repo, path) for path in os.listdir(temp_repo)
-            if path not in self.exclude_modules
+            if self._is_module_included(path)
         )
         return (path for path in paths if os.path.isdir(path))
+
+    def _is_module_included(self, module: str):
+        if module in self.exclude_modules:
+            return False
+
+        if self.include_modules is None:
+            return True
+
+        return module in self.include_modules
 
 
 class Base(Addon):
