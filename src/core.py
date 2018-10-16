@@ -121,7 +121,12 @@ class Addon(object):
         )
         return (path for path in paths if os.path.isdir(path))
 
-    def _is_module_included(self, module: str):
+    def _is_module_included(self, module):
+        """Evaluate if the module must be included in the Odoo addons.
+
+        :param string module: the name of the module
+        :rtype: bool
+        """
         if module in self.exclude_modules:
             return False
 

@@ -65,7 +65,7 @@ class ThirdPartyTestMixin(unittest.TestCase):
 
 class TestInstallThirdParty(ThirdPartyTestMixin):
 
-    yaml_data = [
+    _yaml_data = [
         {
             "url": "https://github.com/OCA/server-tools",
             "branch": "11.0",
