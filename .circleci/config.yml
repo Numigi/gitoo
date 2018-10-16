@@ -79,8 +79,6 @@ jobs:
       - run:
           <<: *run_tests
       - run:
-          <<: *coverage_report
-      - run:
           <<: *rm_virtualenv
       - run:
           <<: *run_cli
