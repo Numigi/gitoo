@@ -47,39 +47,43 @@ class TestInstallBase(unittest.TestCase):
         self.assertTrue(os.listdir(self.destination))
 
 
-class TestInstallThirdParty(unittest.TestCase):
+class ThirdPartyTestMixin(unittest.TestCase):
 
     def setUp(self):
-        super(TestInstallThirdParty, self).setUp()
+        super(ThirdPartyTestMixin, self).setUp()
         self.func = cli._install_all
         _, self.filename = tempfile.mkstemp()
-        yaml_data = [
-            {
-                "url": "https://github.com/OCA/server-tools",
-                "branch": "11.0",
-                "commit": "32291d5b6aed0a9a3400975288fc6bef2cb5f985",
-                "patches": [
-                    {
-                        "url": "https://github.com/ddufresne/server-tools",
-                        "branch": "11.0-mig-super_calendar",
-                        "commit": "34e67cab64250de60fa4e1c24cae3fbc3962a250"
-                    },
-                ]
-            },
-            {
-                "url": "https://github.com/OCA/website",
-                "branch": "11.0",
-                "commit": "899a2219d35a259422ce916ba99947108bc3cc3c",
-            },
-        ]
         with open(self.filename, 'w') as f:
-            yaml.dump(yaml_data, f)
+            yaml.dump(self._yaml_data, f)
         self.destination = tempfile.mkdtemp()
 
     def tearDown(self):
-        super(TestInstallThirdParty, self).tearDown()
+        super(ThirdPartyTestMixin, self).tearDown()
         if os.path.exists(self.destination):
             shutil.rmtree(self.destination)
+
+
+class TestInstallThirdParty(ThirdPartyTestMixin):
+
+    _yaml_data = [
+        {
+            "url": "https://github.com/OCA/server-tools",
+            "branch": "11.0",
+            "commit": "32291d5b6aed0a9a3400975288fc6bef2cb5f985",
+            "patches": [
+                {
+                    "url": "https://github.com/ddufresne/server-tools",
+                    "branch": "11.0-mig-super_calendar",
+                    "commit": "34e67cab64250de60fa4e1c24cae3fbc3962a250"
+                },
+            ]
+        },
+        {
+            "url": "https://github.com/OCA/website",
+            "branch": "11.0",
+            "commit": "899a2219d35a259422ce916ba99947108bc3cc3c",
+        },
+    ]
 
     def test_install_all(self):
         self.assertFalse(os.listdir(self.destination))
@@ -90,3 +94,23 @@ class TestInstallThirdParty(unittest.TestCase):
         destination = os.path.join(self.destination, 'addons')
         with self.assertRaises(RuntimeError):
             self.func(destination=destination, conf_file=self.filename)
+
+
+class TestInstallThirdPartyWithIncludes(ThirdPartyTestMixin):
+
+    _included_modules = ["website_multi_theme", "website_odoo_debranding"]
+
+    _yaml_data = [
+        {
+            "url": "https://github.com/OCA/website",
+            "branch": "11.0",
+            "commit": "899a2219d35a259422ce916ba99947108bc3cc3c",
+            "includes": _included_modules,
+        },
+    ]
+
+    def test_install_all(self):
+        self.assertFalse(os.listdir(self.destination))
+        self.func(destination=self.destination, conf_file=self.filename)
+        modules = os.listdir(self.destination)
+        self.assertEqual(set(modules), set(self._included_modules))

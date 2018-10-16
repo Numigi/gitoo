@@ -57,13 +57,13 @@ jobs:
       - run:
           <<: *run_tests
       - run:
-          <<: *coverage_report
-      - run:
           <<: *coverage_report_codacy
       - run:
           <<: *rm_virtualenv
       - run:
           <<: *run_cli
+      - run:
+          <<: *pipenv_check
       - store_test_results:
           path: ./log
 
@@ -79,11 +79,11 @@ jobs:
       - run:
           <<: *run_tests
       - run:
-          <<: *coverage_report
-      - run:
           <<: *rm_virtualenv
       - run:
           <<: *run_cli
+      - run:
+          <<: *pipenv_check
 
   deploy:
     docker:

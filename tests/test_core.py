@@ -50,6 +50,7 @@ class TestAddon(unittest.TestCase):
             core.Patch(self.url, self.branch, self.commit),
         ]
         self.excludes = ['e1', 'e2']
+        self.includes = ['e3', 'e4']
 
     def test_required(self):
         inst = self.klass(self.url, self.branch)
@@ -85,6 +86,14 @@ class TestAddon(unittest.TestCase):
     def test_excludes_default_value(self):
         inst = self.klass(self.url, self.branch)
         self.assertEqual([], inst.exclude_modules)
+
+    def test_includes_optional(self):
+        inst = self.klass(self.url, self.branch, include_modules=self.includes)
+        self.assertEqual(self.includes, inst.include_modules)
+
+    def test_includes_default_value(self):
+        inst = self.klass(self.url, self.branch)
+        self.assertEqual(None, inst.include_modules)
 
 
 class TestPatch(unittest.TestCase):
