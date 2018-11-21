@@ -19,7 +19,7 @@ setup(
     ''',
     install_requires=[
         'gitpython',
-        'click',
+        'click>=7.0',
         'click-didyoumean',
         'crayons',
         'click-help-colors',
