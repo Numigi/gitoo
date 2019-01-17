@@ -134,21 +134,37 @@ class TestPatchUsingFile(ThirdPartyTestMixin):
     ]
 
     def setUp(self):
-        super(TestPatchUsingFile, self).setUp()
+        self.func = cli._install_all
+
+        self.working_dir = tempfile.mkdtemp()
+
+        # Add the yaml conf to the working directory
+        self.yaml_filename = os.path.join(self.working_dir, 'gitoo.yml')
+        with open(self.yaml_filename, 'w') as f:
+            yaml.dump(self._yaml_data, f)
+
+        # Copy the patch files to the working directory
         dir_path = os.path.dirname(os.path.realpath(__file__))
-        self.patch_file = os.path.join(dir_path, 'patches', self._patch_name)
-        self.patches_dir = '/tmp/gitoo-patches'
-        os.makedirs(self.patches_dir)
-        shutil.copy2(self.patch_file, self.patches_dir)
+        patch_file = os.path.join(dir_path, 'patches', self._patch_name)
+        patches_dir = os.path.join(self.working_dir, 'gitoo-patches')
+        os.makedirs(patches_dir)
+        shutil.copy2(patch_file, patches_dir)
+
+        # Create the destination directory
+        self.destination = tempfile.mkdtemp()
 
     def tearDown(self):
-        super(TestPatchUsingFile, self).tearDown()
-        if os.path.exists(self.patch_file):
-            shutil.rmtree(self.patches_dir)
+        super(ThirdPartyTestMixin, self).tearDown()
+
+        if os.path.exists(self.working_dir):
+            shutil.rmtree(self.working_dir)
+
+        if os.path.exists(self.destination):
+            shutil.rmtree(self.destination)
 
     def test_install_all(self):
         self.assertFalse(os.listdir(self.destination))
-        self.func(destination=self.destination, conf_file=self.filename)
+        self.func(destination=self.destination, conf_file=self.yaml_filename)
 
         readme_file = os.path.join(self.destination, 'sentry', 'README.rst')
         readme_content = open(readme_file, 'r').read()
