@@ -138,7 +138,7 @@ class TestPatchUsingFile(ThirdPartyTestMixin):
         dir_path = os.path.dirname(os.path.realpath(__file__))
         self.patch_file = os.path.join(dir_path, 'patches', self._patch_name)
         self.patches_dir = '/tmp/gitoo-patches'
-        os.makedirs(self.patches_dir, exist_ok=True)
+        os.makedirs(self.patches_dir)
         shutil.copy2(self.patch_file, self.patches_dir)
 
     def tearDown(self):
