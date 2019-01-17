@@ -161,20 +161,20 @@ class Base(Addon):
 
 
 def _run_command_inside_folder(command, folder):
-        """Run a command inside the given folder.
+    """Run a command inside the given folder.
 
-        :param string command: the command to execute.
-        :param string folder: the folder where to execute the command.
-        :return: the return code of the process.
-        :rtype: Tuple[int, str]
-        """
-        logger.debug("command: %s", command)
-        # avoid usage of shell = True
-        # see https://docs.openstack.org/bandit/latest/plugins/subprocess_popen_with_shell_equals_true.html
-        process = subprocess.Popen(command.split(), stdout=subprocess.PIPE, cwd=folder)
-        stream_data = process.communicate()[0]
-        logger.debug("%s stdout: %s (RC %s)", command, stream_data, process.returncode)
-        return process.returncode, stream_data
+    :param string command: the command to execute.
+    :param string folder: the folder where to execute the command.
+    :return: the return code of the process.
+    :rtype: Tuple[int, str]
+    """
+    logger.debug("command: %s", command)
+    # avoid usage of shell = True
+    # see https://docs.openstack.org/bandit/latest/plugins/subprocess_popen_with_shell_equals_true.html
+    process = subprocess.Popen(command.split(), stdout=subprocess.PIPE, cwd=folder)
+    stream_data = process.communicate()[0]
+    logger.debug("%s stdout: %s (RC %s)", command, stream_data, process.returncode)
+    return process.returncode, stream_data
 
 
 class Patch(object):
