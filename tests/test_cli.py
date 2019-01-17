@@ -134,6 +134,8 @@ class TestPatchUsingFile(ThirdPartyTestMixin):
     ]
 
     def setUp(self):
+        super(TestPatchUsingFile, self).setUp()
+
         self.func = cli._install_all
 
         self.working_dir = tempfile.mkdtemp()
@@ -154,7 +156,7 @@ class TestPatchUsingFile(ThirdPartyTestMixin):
         self.destination = tempfile.mkdtemp()
 
     def tearDown(self):
-        super(ThirdPartyTestMixin, self).tearDown()
+        super(TestPatchUsingFile, self).tearDown()
 
         if os.path.exists(self.working_dir):
             shutil.rmtree(self.working_dir)
