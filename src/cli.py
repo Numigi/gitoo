@@ -42,7 +42,7 @@ def install_all(destination='', conf_file=None):
 
 def _install_one(
     repo_url, branch, destination, commit='', patches=None,
-    exclude_modules=None, include_modules=None, base=False
+    exclude_modules=None, include_modules=None, base=False, work_directory=''
 ):
     """ Install a third party odoo add-on
 
@@ -50,10 +50,15 @@ def _install_one(
     :param string branch: name of the branch to checkout.
     :param string destination: the folder where the add-on should end up at.
     :param string commit: Optional commit rev to checkout to. If mentioned, that take over the branch
+    :param string work_directory: the path to the directory of the yaml file.
     :param list patches: Optional list of patches to apply.
     """
     patches = patches or []
-    patches = [core.Patch(**patch) for patch in patches]
+    patches = [
+        core.FilePatch(file=patch['file'], work_directory=work_directory)
+        if 'file' in patch else core.Patch(**patch)
+        for patch in patches
+    ]
     addon_cls = core.Base if base else core.Addon
     addon = addon_cls(
         repo_url, branch, commit=commit, patches=patches,
@@ -73,6 +78,8 @@ def _install_all(destination='', conf_file=''):
     dir_path = os.path.dirname(os.path.realpath(__file__))
     destination = destination or os.path.join(dir_path, '..', '3rd')
     conf_file = conf_file or os.path.join(dir_path, '..', "third_party_addons.yaml")
+    work_directory = os.path.dirname(os.path.realpath(conf_file))
+
     with open(conf_file, "r") as conf_data:
         data = yaml.load(conf_data)
         for addons in data:
@@ -85,4 +92,5 @@ def _install_all(destination='', conf_file=''):
                 exclude_modules=addons.get('excludes'),
                 include_modules=addons.get('includes'),
                 base=addons.get('base'),
+                work_directory=work_directory,
             )

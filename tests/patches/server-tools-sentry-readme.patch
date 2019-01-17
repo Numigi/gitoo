@@ -1,0 +1,22 @@
+From 4e16fa2b338f7cd6689a1af90b51650fd97efd3e Mon Sep 17 00:00:00 2001
+From: David Dufresne <david.dufresne@numigi.net>
+Date: Thu, 17 Jan 2019 11:59:25 -0500
+Subject: [PATCH 1/1] Add comment in README
+
+---
+ sentry/README.rst | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/sentry/README.rst b/sentry/README.rst
+index f7f61e14..c29cdbe6 100644
+--- a/sentry/README.rst
++++ b/sentry/README.rst
+@@ -166,3 +166,5 @@ To contribute to this module, please visit https://odoo-community.org.
+ 
+ 
+ .. _raven: https://github.com/getsentry/raven-python
++
++This is a patch.
+-- 
+2.17.1
+

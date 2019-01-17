@@ -63,6 +63,19 @@ A typical config file to get odoo add-ons would look like:
 to be at a precise commit
 * The second section shows how to apply patches
 
+**Applying Patch From File**
+
+To apply a patch directly from a .patch file instead of a git branch, you may do as follow:
+
+``` yaml
+- url: https://github.com/OCA/hr
+  branch: 11.0
+  commit: 0e72182eab23438edf444f4aae3a808d10784082
+  patches:
+    - file: relative/path/to/first.patch
+    - file: relative/path/to/second.patch
+```
+
 **Special cas of Odoo source code**
 
 Gitoo allows to manage the source code of odoo almost like any other code:

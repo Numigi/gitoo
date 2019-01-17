@@ -114,3 +114,60 @@ class TestInstallThirdPartyWithIncludes(ThirdPartyTestMixin):
         self.func(destination=self.destination, conf_file=self.filename)
         modules = os.listdir(self.destination)
         self.assertEqual(set(modules), set(self._included_modules))
+
+
+class TestPatchUsingFile(ThirdPartyTestMixin):
+
+    _patch_name = 'server-tools-sentry-readme.patch'
+
+    _yaml_data = [
+        {
+            "url": "https://github.com/OCA/server-tools",
+            "branch": "11.0",
+            "commit": "32291d5b6aed0a9a3400975288fc6bef2cb5f985",
+            "patches": [
+                {
+                    "file": "gitoo-patches/{}".format(_patch_name),
+                },
+            ]
+        },
+    ]
+
+    def setUp(self):
+        super(TestPatchUsingFile, self).setUp()
+
+        self.func = cli._install_all
+
+        self.working_dir = tempfile.mkdtemp()
+
+        # Add the yaml conf to the working directory
+        self.yaml_filename = os.path.join(self.working_dir, 'gitoo.yml')
+        with open(self.yaml_filename, 'w') as f:
+            yaml.dump(self._yaml_data, f)
+
+        # Copy the patch files to the working directory
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        patch_file = os.path.join(dir_path, 'patches', self._patch_name)
+        patches_dir = os.path.join(self.working_dir, 'gitoo-patches')
+        os.makedirs(patches_dir)
+        shutil.copy2(patch_file, patches_dir)
+
+        # Create the destination directory
+        self.destination = tempfile.mkdtemp()
+
+    def tearDown(self):
+        super(TestPatchUsingFile, self).tearDown()
+
+        if os.path.exists(self.working_dir):
+            shutil.rmtree(self.working_dir)
+
+        if os.path.exists(self.destination):
+            shutil.rmtree(self.destination)
+
+    def test_install_all(self):
+        self.assertFalse(os.listdir(self.destination))
+        self.func(destination=self.destination, conf_file=self.yaml_filename)
+
+        readme_file = os.path.join(self.destination, 'sentry', 'README.rst')
+        readme_content = open(readme_file, 'r').read()
+        self.assertIn('This is a patch.', readme_content)

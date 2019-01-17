@@ -74,8 +74,8 @@ class Addon(object):
         self.branch = branch
         self.commit = commit
         self.patches = patches or []
-        if not all(isinstance(patch, Patch) for patch in self.patches):
-            raise RuntimeError("Patches should be defined using Patch object.")
+        if not all(isinstance(patch, (Patch, FilePatch)) for patch in self.patches):
+            raise RuntimeError("Patches should be defined using Patch or FilePatch object.")
         self.exclude_modules = exclude_modules or []
         self.include_modules = include_modules
 
@@ -160,6 +160,23 @@ class Base(Addon):
         force_move(tmp_odoo, destination)
 
 
+def _run_command_inside_folder(command, folder):
+    """Run a command inside the given folder.
+
+    :param string command: the command to execute.
+    :param string folder: the folder where to execute the command.
+    :return: the return code of the process.
+    :rtype: Tuple[int, str]
+    """
+    logger.debug("command: %s", command)
+    # avoid usage of shell = True
+    # see https://docs.openstack.org/bandit/latest/plugins/subprocess_popen_with_shell_equals_true.html
+    process = subprocess.Popen(command.split(), stdout=subprocess.PIPE, cwd=folder)
+    stream_data = process.communicate()[0]
+    logger.debug("%s stdout: %s (RC %s)", command, stream_data, process.returncode)
+    return process.returncode, stream_data
+
+
 class Patch(object):
 
     def __init__(self, url, branch, commit):
@@ -188,16 +205,38 @@ class Patch(object):
             "git remote remove {}".format(remote_name),
         ]
         for command in commands:
-            logger.debug("command: %s", command)
-            # avoid usage of shell = True
-            # see https://docs.openstack.org/bandit/latest/plugins/subprocess_popen_with_shell_equals_true.html
-            process = subprocess.Popen(command.split(), stdout=subprocess.PIPE, cwd=folder)
-            stream_data = process.communicate()[0]
-            logger.debug("Merge stdout: %s (RC %s)", stream_data, process.returncode)
-            if process.returncode:
-                msg = "Could not apply patch from {}@{}: {}. Error: {}".format(self.url, self.branch, command, stream_data)
+            return_code, stream_data = _run_command_inside_folder(command, folder)
+            if return_code:
+                msg = "Could not apply patch from {}@{}: {}. Error: {}".format(
+                    self.url, self.branch, command, stream_data)
                 logger.error(msg)
                 raise RuntimeError(msg)
+
+
+class FilePatch(object):
+
+    def __init__(self, file, work_directory):
+        """ Init
+
+        :param string file: the relative path to the patch file.
+        :param string work_directory: the path to the directory of the yaml file.
+        """
+        self.file_path = os.path.join(work_directory, file)
+
+    def apply(self, folder):
+        """Apply a patch from a git patch file.
+
+        :param string folder: path of the folder where is the git repo cloned at.
+        :raise: RuntimeError if the patch could not be applied.
+        """
+        logger.info("Apply Patch File %s", self.file_path)
+        command = "git apply {}".format(self.file_path)
+        return_code, stream_data = _run_command_inside_folder(command, folder)
+
+        if return_code:
+            msg = "Could not apply patch file at {}. Error: {}".format(self.file_path, stream_data)
+            logger.error(msg)
+            raise RuntimeError(msg)
 
 
 def parse_url(url):
