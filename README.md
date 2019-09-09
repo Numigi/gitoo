@@ -134,3 +134,34 @@ gitoo install-all --conf_file ./gitoo.yml --destination "${DIST_PACKAGES}"
 
 In this example, all modules from the repository will be moved to ``${DIST_PACKAGES}/odoo/addons``.
 This includes the modules ``base`` as well as ``account``, ``analytic``, ``hr`` and so on.
+
+**Include Specific Modules**
+
+Gitoo allows to specify which modules to import from a repository.
+
+The following config usess ``includes`` to install 2 modules from OCA/hr.
+
+``` yaml
+- url: https://github.com/OCA/hr
+  branch: 11.0
+  includes:
+    - hr_experience
+    - hr_family
+```
+
+Any other module is automatically discarded by gitoo.
+
+**Exclude Specific Modules**
+
+It is also possible to exclude specific modules from a repository.
+This can be useful when most modules from a repository are trusted and few modules have major issues.
+
+``` yaml
+- url: https://github.com/someorganization/somerepo
+  branch: 11.0
+  excludes:
+    - untrusted_module_1
+    - untrusted_module_2
+```
+
+This config will install all modules except ``untrusted_module_1`` and ``untrusted_module_2``.
