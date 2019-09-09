@@ -1,6 +1,6 @@
 # Gitoo
 
-A library to manage odoo add-ons.
+A library to gather odoo add-ons from git repositories.
 
 ## Services
 Service|Status
@@ -18,6 +18,42 @@ It keeps the folder light.
 
 At [Numigi](www.numigi.com), gitoo is used to populate the dockers with the wanted odoo addons.
 
+## Why Gitoo?
+
+Gitoo is one of the first tools developped at Numigi.
+
+It is simple to use and completely decoupled from anything other than gathering Odoo modules.
+
+Before we decided to develop and maintain our own tool, we looked at what was used by the other integrators.
+Here are the main options we found in the community:
+
+### pip
+
+``pip`` is an awesome tool for managing python dependencies.
+
+People from OCA figured an easy way to integrate Odoo modules with setuptools.
+However, this requires all third-party-addons used in a project to have a setup.py file for this setup to be cohesive.
+
+Even the source code of Odoo is incompatible with pip.
+This makes the ``managing python dependencies`` argument for pip questionable.
+
+### git-aggregator
+
+Gitoo was inspired by [git-aggregator](https://github.com/acsone/git-aggregator).
+
+However, there is a major difference between both tools.
+Gitoo does not use any kind of cache.
+
+It is specifically intended to build container images.
+After the gitoo command is ran, the git history is removed.
+This allows to make our images as small as possible.
+
+git-aggregator mitigates this issue with shallow clones. This reduces disk space and bandwidth usage.
+
+Bandwidth has never been an issue (at Numigi) for building our images.
+For this reason, cloning the whole repo and removing the git history is a better strategy.
+It makes the process and the configuration simpler.
+
 ## Commands
 gitoo contains the following command:
 
@@ -25,7 +61,7 @@ gitoo contains the following command:
 
 ## <a name="install_all"></a> Install All
 
-A tool for creating backups of a database.
+Install all modules from the given config file.
 
 ```bash
 gitoo install_all --conf_file gitoo.yml --destination /mnt/extra-addons
@@ -35,7 +71,6 @@ gitoo install_all --conf_file gitoo.yml --destination /mnt/extra-addons
 The parameter defaults to `./third_party_addons.yaml`
 * The parameter `--destination` expects the path where the add-ons should be copied to.
 The parameter defaults to `./3rd/`
-
 
 ## <a name="git_config_file"></a>Config File
 
@@ -60,7 +95,7 @@ A typical config file to get odoo add-ons would look like:
 ```
 
 * The first section downloads the code of the repo website from the branch 11.0. It also forces
-to be at a precise commit
+to be at a precise commit.
 * The second section shows how to apply patches
 
 **Applying Patch From File**
@@ -79,11 +114,23 @@ To apply a patch directly from a .patch file instead of a git branch, you may do
 **Special cas of Odoo source code**
 
 Gitoo allows to manage the source code of odoo almost like any other code:
+
 ``` yaml
 - url: https://github.com/odoo/odoo
   branch: "11.0"
   base: true
 ```
-* The code downloads odoo from the branch 11.0. The argument base informs gitoo that the repo is actually 
-the code of the application, not a simple add-on.
+The code downloads odoo from the branch 11.0.
+The argument base informs gitoo that the repo is actually the code of the application, not a simple add-on.
 
+This allows gitoo to apply specifc logic related to the structure of the [Odoo source code](https://github.com/odoo/odoo).
+
+Here is an example of command to install the Odoo source code using gitoo:
+
+```bash
+export DIST_PACKAGES=/usr/lib/python3/dist-packages/
+gitoo install-all --conf_file /gitoo.yml --destination "${DIST_PACKAGES}"
+```
+
+In this example, all modules from the repository will be moved to ``${DIST_PACKAGES}/odoo/addons``.
+This includes the modules ``base`` as well as ``account``, ``analytic``, ``hr`` and so on.
