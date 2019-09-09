@@ -67,24 +67,6 @@ jobs:
       - store_test_results:
           path: ./log
 
-  python2:
-    docker:
-      - image: circleci/python:2.7
-    steps:
-      - checkout
-      - run:
-          <<: *requirements
-      - run:
-          <<: *git_config
-      - run:
-          <<: *run_tests
-      - run:
-          <<: *rm_virtualenv
-      - run:
-          <<: *run_cli
-      - run:
-          <<: *pipenv_check
-
   deploy:
     docker:
       - image: circleci/python:3
@@ -117,7 +99,6 @@ workflows:
           filters:
             tags:
               only: /.*/
-      - python2
       - deploy:
           requires:
             - python3
