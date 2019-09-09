@@ -129,7 +129,7 @@ Here is an example of command to install the Odoo source code using gitoo:
 
 ```bash
 export DIST_PACKAGES=/usr/lib/python3/dist-packages/
-gitoo install-all --conf_file /gitoo.yml --destination "${DIST_PACKAGES}"
+gitoo install-all --conf_file ./gitoo.yml --destination "${DIST_PACKAGES}"
 ```
 
 In this example, all modules from the repository will be moved to ``${DIST_PACKAGES}/odoo/addons``.
