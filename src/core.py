@@ -101,7 +101,7 @@ class Addon(object):
             patch.apply(temp_repo)
 
     def _move_modules(self, temp_repo, destination):
-        """Move modules froom the temp directory to the destination.
+        """Move modules from the temp directory to the destination.
 
         :param string temp_repo: the folder containing the code.
         :param string destination: the folder where the add-on should end up at.
@@ -117,9 +117,21 @@ class Addon(object):
         """
         paths = (
             os.path.join(temp_repo, path) for path in os.listdir(temp_repo)
-            if self._is_module_included(path)
+            if self._is_odoo_module(temp_repo, path) and self._is_module_included(path)
         )
         return (path for path in paths if os.path.isdir(path))
+
+    def _is_odoo_module(self, repo_path, file_name):
+        """Evaluate if the given file/folder is an odoo module.
+
+        :param string module: the name of the file/folder
+        :rtype: bool
+        """
+        file_path = os.path.join(repo_path, file_name)
+        return (
+            os.path.isdir(file_path) and
+            '__manifest__.py' in os.listdir(file_path)
+        )
 
     def _is_module_included(self, module):
         """Evaluate if the module must be included in the Odoo addons.
