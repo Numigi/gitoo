@@ -95,6 +95,11 @@ class TestInstallThirdParty(ThirdPartyTestMixin):
         with self.assertRaises(RuntimeError):
             self.func(destination=destination, conf_file=self.filename)
 
+    def test_git_folder_excluded(self):
+        self.func(destination=self.destination, conf_file=self.filename)
+        git_folder = os.path.join(self.destination, '.git')
+        self.assertFalse(os.path.exists(git_folder))
+
 
 class TestInstallThirdPartyWithIncludes(ThirdPartyTestMixin):
 
