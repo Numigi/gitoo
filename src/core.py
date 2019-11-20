@@ -121,7 +121,8 @@ class Addon(object):
         )
         return (path for path in paths if os.path.isdir(path))
 
-    def _is_odoo_module(self, repo_path, file_name):
+    @staticmethod
+    def _is_odoo_module(repo_path, file_name):
         """Evaluate if the given file/folder is an odoo module.
 
         :param string module: the name of the file/folder
