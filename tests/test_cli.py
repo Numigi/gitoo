@@ -38,7 +38,7 @@ class TestInstallBase(unittest.TestCase):
         if os.path.exists(self.destination):
             shutil.rmtree(self.destination)
 
-    def _test_install_all(self):
+    def test_install_all(self):
         self.assertFalse(os.listdir(self.destination))
         self.func(
             destination=self.destination,
