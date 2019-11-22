@@ -50,7 +50,7 @@ quay_io_login: &quay_io_login
 
 deploy_docker_build: &deploy_docker_build
   name: Docker build
-  command: docker build --rm --pull -t "${DOCKER_IMAGE_NAME}" .
+  command: docker build --build-arg GITOO_VERSION="${GITOO_VERSION}" --rm --pull -t "${DOCKER_IMAGE_NAME}" .
 
 deploy_docker_push: &deploy_docker_push
   name: Docker push
