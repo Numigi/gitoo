@@ -44,6 +44,18 @@ pipenv_check: &pipenv_check
   name: Check for security vulnerabilities
   command: pipenv check
 
+quay_io_login: &quay_io_login
+  name: Login to Quay.io register
+  command: echo "${QUAY_TOKEN}" | docker login quay.io -u "${QUAY_USER}" --password-stdin
+
+deploy_docker_build: &deploy_docker_build
+  name: Docker build
+  command: docker build --rm --pull -t "${DOCKER_IMAGE_NAME}" .
+
+deploy_docker_push: &deploy_docker_push
+  name: Docker push
+  command: docker push "${DOCKER_IMAGE_NAME}"
+
 jobs:
   python3:
     docker:
@@ -91,6 +103,23 @@ jobs:
             pipenv install twine
             pipenv run twine upload dist/*
 
+  deploy-docker-image:
+    machine: true
+    steps:
+      - checkout
+      - run:
+          <<: *quay_io_login
+      - run:
+          name: Set DOCKER_IMAGE_NAME env variable
+          command: |
+            echo 'export DOCKER_IMAGE_NAME="quay.io/${CIRCLE_PROJECT_USERNAME,,}/${CIRCLE_PROJECT_REPONAME,,}:${CIRCLE_TAG}"' >> $BASH_ENV
+            source $BASH_ENV
+            echo docker image name: ${DOCKER_IMAGE_NAME}
+      - run:
+          <<: *deploy_docker_build
+      - run:
+          <<: *deploy_docker_push
+
 workflows:
   version: 2
   build:
@@ -102,6 +131,15 @@ workflows:
       - deploy:
           requires:
             - python3
+          filters:
+            tags:
+              only: /[0-9]+(\.[0-9]+)*/
+            branches:
+              ignore: /.*/
+      - deploy-docker-image:
+          requires:
+            - deploy
+          context: quay.io
           filters:
             tags:
               only: /[0-9]+(\.[0-9]+)*/
