@@ -8,7 +8,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     git config --global user.email "root@localhost" && \
     rm -rf /var/lib/apt/lists/*
 
-ARG GITOO_VERSION
-RUN pip install gitoo==${GITOO_VERSION}
+ENV GITOO_HOME=/home/gitoo/
+RUN mkdir ${GITOO_HOME}
+
+COPY src ${GITOO_HOME}/src
+COPY .git ${GITOO_HOME}/.git
+COPY setup.cfg setup.py ${GITOO_HOME}
+RUN pip install ${GITOO_HOME}
 
 ENTRYPOINT ["gitoo"]
