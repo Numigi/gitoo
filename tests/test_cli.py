@@ -108,7 +108,8 @@ class TestInstallThirdParty(ThirdPartyTestMixin):
     def test_install_two_languages(self):
         self.func(destination=self.destination, conf_file=self.filename, lang="fr,es")
         available_files = os.listdir(self.destination + "/auditlog/i18n")
-        self.assertEqual(available_files, ["fr.po", "es.po"])
+        available_files.sort()
+        self.assertEqual(available_files, ["es.po", "fr.po"])
 
     def test_install_all_languages_by_default(self):
         self.func(destination=self.destination, conf_file=self.filename, lang="")
