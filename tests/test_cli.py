@@ -26,7 +26,7 @@ class TestInstallBase(unittest.TestCase):
                     },
                 ],
                 "exclude_modules": ["web_tour"],
-                "base": True
+                "base": True,
             },
         ]
         with open(self.filename, 'w') as f:
@@ -99,6 +99,21 @@ class TestInstallThirdParty(ThirdPartyTestMixin):
         self.func(destination=self.destination, conf_file=self.filename)
         git_folder = os.path.join(self.destination, '.git')
         self.assertFalse(os.path.exists(git_folder))
+
+    def test_install_fr_lang_only(self):
+        self.func(destination=self.destination, conf_file=self.filename, lang="fr")
+        available_files = os.listdir(self.destination + "/auditlog/i18n")
+        self.assertEqual(available_files, ["fr.po"])
+
+    def test_install_two_languages(self):
+        self.func(destination=self.destination, conf_file=self.filename, lang="fr,es")
+        available_files = os.listdir(self.destination + "/auditlog/i18n")
+        self.assertEqual(available_files, ["fr.po", "es.po"])
+
+    def test_install_all_languages_by_default(self):
+        self.func(destination=self.destination, conf_file=self.filename, lang="")
+        available_files = os.listdir(self.destination + "/auditlog/i18n")
+        self.assertIn("fr.po", available_files)
 
 
 class TestInstallThirdPartyWithIncludes(ThirdPartyTestMixin):
