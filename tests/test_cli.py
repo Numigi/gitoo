@@ -38,7 +38,7 @@ class TestInstallBase(unittest.TestCase):
         if os.path.exists(self.destination):
             shutil.rmtree(self.destination)
 
-    def _test_install_all(self):
+    def test_install_all(self):
         self.assertFalse(os.listdir(self.destination))
         self.func(
             destination=self.destination,
@@ -85,17 +85,17 @@ class TestInstallThirdParty(ThirdPartyTestMixin):
         },
     ]
 
-    def _test_install_all(self):
+    def test_install_all(self):
         self.assertFalse(os.listdir(self.destination))
         self.func(destination=self.destination, conf_file=self.filename)
         self.assertTrue(os.listdir(self.destination))
 
-    def _test_destination_folder_does_not_exist(self):
+    def test_destination_folder_does_not_exist(self):
         destination = os.path.join(self.destination, 'addons')
         with self.assertRaises(RuntimeError):
             self.func(destination=destination, conf_file=self.filename)
 
-    def _test_git_folder_excluded(self):
+    def test_git_folder_excluded(self):
         self.func(destination=self.destination, conf_file=self.filename)
         git_folder = os.path.join(self.destination, '.git')
         self.assertFalse(os.path.exists(git_folder))
@@ -129,7 +129,7 @@ class TestInstallThirdPartyWithIncludes(ThirdPartyTestMixin):
         },
     ]
 
-    def _test_install_all(self):
+    def test_install_all(self):
         self.assertFalse(os.listdir(self.destination))
         self.func(destination=self.destination, conf_file=self.filename)
         modules = os.listdir(self.destination)
@@ -184,7 +184,7 @@ class TestPatchUsingFile(ThirdPartyTestMixin):
         if os.path.exists(self.destination):
             shutil.rmtree(self.destination)
 
-    def _test_install_all(self):
+    def test_install_all(self):
         self.assertFalse(os.listdir(self.destination))
         self.func(destination=self.destination, conf_file=self.yaml_filename)
 
