@@ -165,3 +165,17 @@ This can be useful when most modules from a repository are trusted and few modul
 ```
 
 This config will install all modules except ``untrusted_module_1`` and ``untrusted_module_2``.
+
+**Include Only Specific Languages**
+
+It is possible to specify to gitoo a list of languages to include in the i18n folder.
+
+This is done with the option ``--lang``. It accepts a list of language codes separated with commas.
+
+```bash
+gitoo install-all ... --lang fr,fr_CA,es
+```
+
+This allows to build lighter docker images, because unnecessary po files are excluded.
+
+By default, for retro-compatibility, all languages are included.
