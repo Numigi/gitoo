@@ -59,7 +59,8 @@ class Addon(object):
 
     def __init__(
         self, url, branch, commit='', patches=None,
-        exclude_modules=None, include_modules=None
+        exclude_modules=None, include_modules=None,
+        lang='',
     ):
         """ Init
 
@@ -78,6 +79,7 @@ class Addon(object):
             raise RuntimeError("Patches should be defined using Patch or FilePatch object.")
         self.exclude_modules = exclude_modules or []
         self.include_modules = include_modules
+        self.languages = lang.split(',') if lang else []
 
     def install(self, destination):
         """ Install a third party odoo add-on
@@ -90,6 +92,7 @@ class Addon(object):
         )
         with temp_repo(self.repo, self.branch, self.commit) as tmp:
             self._apply_patches(tmp)
+            self._delete_unrequired_languages(tmp)
             self._move_modules(tmp, destination)
 
     def _apply_patches(self, temp_repo):
@@ -99,6 +102,29 @@ class Addon(object):
         """
         for patch in self.patches:
             patch.apply(temp_repo)
+
+    def _delete_unrequired_languages(self, temp_repo):
+        if not self.languages:
+            return
+
+        for directory, file_name in self._iter_po_files(temp_repo):
+            lang = file_name.split('.')[0]
+            if lang not in self.languages:
+                file_path = os.path.join(directory, file_name)
+                os.remove(file_path)
+
+    def _iter_po_files(self, temp_repo):
+        for i18n_folder in self._iter_i18n_folders(temp_repo):
+            po_files = os.listdir(i18n_folder)
+            for file_name in po_files:
+                yield i18n_folder, file_name
+
+    def _iter_i18n_folders(self, temp_repo):
+        folders = self._get_module_folders(temp_repo)
+        for folder in folders:
+            i18n_folder = folder + '/i18n'
+            if os.path.isdir(i18n_folder):
+                yield i18n_folder
 
     def _move_modules(self, temp_repo, destination):
         """Move modules from the temp directory to the destination.

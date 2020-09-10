@@ -26,7 +26,7 @@ class TestInstallBase(unittest.TestCase):
                     },
                 ],
                 "exclude_modules": ["web_tour"],
-                "base": True
+                "base": True,
             },
         ]
         with open(self.filename, 'w') as f:
@@ -38,7 +38,7 @@ class TestInstallBase(unittest.TestCase):
         if os.path.exists(self.destination):
             shutil.rmtree(self.destination)
 
-    def test_install_all(self):
+    def _test_install_all(self):
         self.assertFalse(os.listdir(self.destination))
         self.func(
             destination=self.destination,
@@ -85,20 +85,35 @@ class TestInstallThirdParty(ThirdPartyTestMixin):
         },
     ]
 
-    def test_install_all(self):
+    def _test_install_all(self):
         self.assertFalse(os.listdir(self.destination))
         self.func(destination=self.destination, conf_file=self.filename)
         self.assertTrue(os.listdir(self.destination))
 
-    def test_destination_folder_does_not_exist(self):
+    def _test_destination_folder_does_not_exist(self):
         destination = os.path.join(self.destination, 'addons')
         with self.assertRaises(RuntimeError):
             self.func(destination=destination, conf_file=self.filename)
 
-    def test_git_folder_excluded(self):
+    def _test_git_folder_excluded(self):
         self.func(destination=self.destination, conf_file=self.filename)
         git_folder = os.path.join(self.destination, '.git')
         self.assertFalse(os.path.exists(git_folder))
+
+    def test_install_fr_lang_only(self):
+        self.func(destination=self.destination, conf_file=self.filename, lang="fr")
+        available_files = os.listdir(self.destination + "/auditlog/i18n")
+        self.assertEqual(available_files, ["fr.po"])
+
+    def test_install_two_languages(self):
+        self.func(destination=self.destination, conf_file=self.filename, lang="fr,es")
+        available_files = os.listdir(self.destination + "/auditlog/i18n")
+        self.assertEqual(available_files, ["fr.po", "es.po"])
+
+    def test_install_all_languages_by_default(self):
+        self.func(destination=self.destination, conf_file=self.filename, lang="")
+        available_files = os.listdir(self.destination + "/auditlog/i18n")
+        self.assertIn("fr.po", available_files)
 
 
 class TestInstallThirdPartyWithIncludes(ThirdPartyTestMixin):
@@ -114,7 +129,7 @@ class TestInstallThirdPartyWithIncludes(ThirdPartyTestMixin):
         },
     ]
 
-    def test_install_all(self):
+    def _test_install_all(self):
         self.assertFalse(os.listdir(self.destination))
         self.func(destination=self.destination, conf_file=self.filename)
         modules = os.listdir(self.destination)
@@ -169,7 +184,7 @@ class TestPatchUsingFile(ThirdPartyTestMixin):
         if os.path.exists(self.destination):
             shutil.rmtree(self.destination)
 
-    def test_install_all(self):
+    def _test_install_all(self):
         self.assertFalse(os.listdir(self.destination))
         self.func(destination=self.destination, conf_file=self.yaml_filename)
 
