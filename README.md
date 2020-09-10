@@ -76,7 +76,7 @@ The parameter defaults to `./3rd/`
 
 Gitoo uses a config file, in yml, to know what add-ons should be downloaded and how.
 
-**Download odoo add-ons**
+### Download odoo add-ons
 
 A typical config file to get odoo add-ons would look like:
 
@@ -98,7 +98,7 @@ A typical config file to get odoo add-ons would look like:
 to be at a precise commit.
 * The second section shows how to apply patches
 
-**Applying Patch From File**
+### Applying Patch From File
 
 To apply a patch directly from a .patch file instead of a git branch, you may do as follow:
 
@@ -111,7 +111,7 @@ To apply a patch directly from a .patch file instead of a git branch, you may do
     - file: relative/path/to/second.patch
 ```
 
-**Special case of Odoo source code**
+### Special case of Odoo source code**
 
 Gitoo allows to manage the source code of odoo almost like any other code:
 
@@ -135,7 +135,7 @@ gitoo install-all --conf_file ./gitoo.yml --destination "${DIST_PACKAGES}"
 In this example, all modules from the repository will be moved to ``${DIST_PACKAGES}/odoo/addons``.
 This includes the modules ``base`` as well as ``account``, ``analytic``, ``hr`` and so on.
 
-**Include Specific Modules**
+### Include Specific Modules
 
 Gitoo allows to specify which modules to import from a repository.
 
@@ -151,7 +151,7 @@ The following config usess ``includes`` to install 2 modules from OCA/hr.
 
 Any other module is automatically discarded by gitoo.
 
-**Exclude Specific Modules**
+### Exclude Specific Modules
 
 It is also possible to exclude specific modules from a repository.
 This can be useful when most modules from a repository are trusted and few modules have major issues.
@@ -166,7 +166,7 @@ This can be useful when most modules from a repository are trusted and few modul
 
 This config will install all modules except ``untrusted_module_1`` and ``untrusted_module_2``.
 
-**Include Only Specific Languages**
+### Include Only Specific Languages
 
 It is possible to specify to gitoo a list of languages to include in the i18n folder.
 
