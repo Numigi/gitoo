@@ -48,9 +48,9 @@ class TestInstallBase(unittest.TestCase):
         self.assertTrue(os.listdir(self.destination))
 
         # Test lang parameter
-        base_i18n_files = os.listdir(self.destination + "odoo/addons/base/i18n")
+        base_i18n_files = os.listdir(self.destination + "/odoo/addons/base/i18n")
         self.assertEqual(base_i18n_files, ["fr.po"])
-        account_i18n_files = os.listdir(self.destination + "odoo/addons/base/account")
+        account_i18n_files = os.listdir(self.destination + "/odoo/addons/account/i18n")
         self.assertEqual(account_i18n_files, ["fr.po"])
 
 
