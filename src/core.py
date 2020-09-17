@@ -141,7 +141,7 @@ class Addon(object):
                 yield path
 
     @staticmethod
-    def _iter_modules(self, temp_repo):
+    def _iter_modules(temp_repo):
         yield from iter_module_folders(temp_repo)
 
     def _is_module_included(self, module):
@@ -183,7 +183,7 @@ class Base(Addon):
         force_move(tmp_odoo, destination)
 
     @staticmethod
-    def _iter_modules(self, temp_repo):
+    def _iter_modules(temp_repo):
         for directory in ('addons', 'odoo/addons'):
             directory_path = os.path.join(temp_repo, directory)
             yield from iter_module_folders(directory_path)
