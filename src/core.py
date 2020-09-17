@@ -120,8 +120,7 @@ class Addon(object):
                 yield i18n_folder, file_name
 
     def _iter_i18n_folders(self, temp_repo):
-        folders = self._get_module_folders(temp_repo)
-        for folder in folders:
+        for folder in self._iter_included_modules(temp_repo):
             i18n_folder = folder + '/i18n'
             if os.path.isdir(i18n_folder):
                 yield i18n_folder
@@ -132,33 +131,18 @@ class Addon(object):
         :param string temp_repo: the folder containing the code.
         :param string destination: the folder where the add-on should end up at.
         """
-        folders = self._get_module_folders(temp_repo)
-        for folder in folders:
+        for folder in self._iter_included_modules(temp_repo):
             force_move(folder, destination)
 
-    def _get_module_folders(self, temp_repo):
-        """Get a list of module paths contained in a temp directory.
-
-        :param string temp_repo: the folder containing the modules.
-        """
-        paths = (
-            os.path.join(temp_repo, path) for path in os.listdir(temp_repo)
-            if self._is_odoo_module(temp_repo, path) and self._is_module_included(path)
-        )
-        return (path for path in paths if os.path.isdir(path))
+    def _iter_included_modules(self, temp_repo):
+        for path in self._iter_modules(temp_repo):
+            module_name = path.split("/")[-1]
+            if self._is_module_included(module_name):
+                yield path
 
     @staticmethod
-    def _is_odoo_module(repo_path, file_name):
-        """Evaluate if the given file/folder is an odoo module.
-
-        :param string module: the name of the file/folder
-        :rtype: bool
-        """
-        file_path = os.path.join(repo_path, file_name)
-        return (
-            os.path.isdir(file_path) and
-            '__manifest__.py' in os.listdir(file_path)
-        )
+    def _iter_modules(temp_repo):
+        yield from iter_module_folders(temp_repo)
 
     def _is_module_included(self, module):
         """Evaluate if the module must be included in the Odoo addons.
@@ -191,12 +175,18 @@ class Base(Addon):
         """
         tmp_addons = os.path.join(temp_repo, 'addons')
         tmp_odoo_addons = os.path.join(temp_repo, 'odoo/addons')
-        folders = self._get_module_folders(tmp_addons)
-        for folder in folders:
+
+        for folder in iter_module_folders(tmp_addons):
             force_move(folder, tmp_odoo_addons)
 
         tmp_odoo = os.path.join(temp_repo, 'odoo')
         force_move(tmp_odoo, destination)
+
+    @staticmethod
+    def _iter_modules(temp_repo):
+        for directory in ('addons', 'odoo/addons'):
+            directory_path = os.path.join(temp_repo, directory)
+            yield from iter_module_folders(directory_path)
 
 
 def _run_command_inside_folder(command, folder):
@@ -276,6 +266,20 @@ class FilePatch(object):
             msg = "Could not apply patch file at {}. Error: {}".format(self.file_path, stream_data)
             logger.error(msg)
             raise RuntimeError(msg)
+
+
+def iter_module_folders(directory):
+    for file in os.listdir(directory):
+        file_path = os.path.join(directory, file)
+        if _is_odoo_module(file_path):
+            yield file_path
+
+
+def _is_odoo_module(file_path):
+    return (
+        os.path.isdir(file_path) and
+        '__manifest__.py' in os.listdir(file_path)
+    )
 
 
 def parse_url(url):

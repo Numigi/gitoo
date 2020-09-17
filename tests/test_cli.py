@@ -42,9 +42,16 @@ class TestInstallBase(unittest.TestCase):
         self.assertFalse(os.listdir(self.destination))
         self.func(
             destination=self.destination,
-            conf_file=self.filename
+            conf_file=self.filename,
+            lang='fr',
         )
         self.assertTrue(os.listdir(self.destination))
+
+        # Test lang parameter
+        base_i18n_files = os.listdir(self.destination + "/odoo/addons/base/i18n")
+        self.assertEqual(base_i18n_files, ["fr.po"])
+        account_i18n_files = os.listdir(self.destination + "/odoo/addons/account/i18n")
+        self.assertEqual(account_i18n_files, ["fr.po"])
 
 
 class ThirdPartyTestMixin(unittest.TestCase):
