@@ -120,8 +120,7 @@ class Addon(object):
                 yield i18n_folder, file_name
 
     def _iter_i18n_folders(self, temp_repo):
-        folders = self._get_module_folders(temp_repo)
-        for folder in folders:
+        for folder in self._iter_module_folders(temp_repo):
             i18n_folder = folder + '/i18n'
             if os.path.isdir(i18n_folder):
                 yield i18n_folder
@@ -132,20 +131,15 @@ class Addon(object):
         :param string temp_repo: the folder containing the code.
         :param string destination: the folder where the add-on should end up at.
         """
-        folders = self._get_module_folders(temp_repo)
-        for folder in folders:
+        for folder in self._iter_module_folders(temp_repo):
             force_move(folder, destination)
 
-    def _get_module_folders(self, temp_repo):
-        """Get a list of module paths contained in a temp directory.
+    def _iter_module_folders(self, temp_repo):
+        """Iter over a list of module paths contained in the git directory.
 
         :param string temp_repo: the folder containing the modules.
         """
-        paths = (
-            os.path.join(temp_repo, path) for path in os.listdir(temp_repo)
-            if self._is_odoo_module(temp_repo, path) and self._is_module_included(path)
-        )
-        return (path for path in paths if os.path.isdir(path))
+        yield from iter_module_folders(temp_repo)
 
     @staticmethod
     def _is_odoo_module(repo_path, file_name):
@@ -197,6 +191,14 @@ class Base(Addon):
 
         tmp_odoo = os.path.join(temp_repo, 'odoo')
         force_move(tmp_odoo, destination)
+
+    def _iter_module_folders(self, temp_repo):
+        """Iter over a list of module paths contained in the git directory.
+
+        :param string temp_repo: the folder containing the modules.
+        """
+        yield from iter_module_folders('addons')
+        yield from iter_module_folders('odoo/addons')
 
 
 def _run_command_inside_folder(command, folder):
@@ -276,6 +278,13 @@ class FilePatch(object):
             msg = "Could not apply patch file at {}. Error: {}".format(self.file_path, stream_data)
             logger.error(msg)
             raise RuntimeError(msg)
+
+
+def iter_module_folders(directory):
+    for file in os.listdir(directory):
+        path = os.path.join(directory, file)
+        if os.path.isdir(path):
+            yield path
 
 
 def parse_url(url):
