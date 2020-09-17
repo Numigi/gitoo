@@ -271,7 +271,7 @@ class FilePatch(object):
 def iter_module_folders(directory):
     for file in os.listdir(directory):
         file_path = os.path.join(directory, file)
-        if os.path.isdir(file_path):
+        if _is_odoo_module(file_path):
             yield file_path
 
 
