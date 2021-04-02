@@ -14,7 +14,7 @@ class TestTempRepo(unittest.TestCase):
     def setUp(self):
         super(TestTempRepo, self).setUp()
         self.repo_url = "https://github.com/pytest-dev/pytest"
-        self.branch = "master"
+        self.branch = "main"
         self.commit = "bd2d0d2c3c9bf92711e5a858e93e46d390dd4229"
 
         self.func = core.temp_repo
