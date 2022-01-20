@@ -49,7 +49,7 @@ quay_io_login: &quay_io_login
 jobs:
   python3:
     docker:
-      - image: circleci/python:3.5
+      - image: circleci/python:3.8
     steps:
       - checkout
       - run:
