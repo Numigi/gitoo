@@ -3,7 +3,7 @@ version: 2.0
 requirements: &requirements
   name: Install requirements
   command: |
-    sudo pip install "pipenv>=9.0.3"
+    sudo pip install pipenv
     pipenv install -e .
 
 git_config: &git_config
@@ -66,8 +66,6 @@ jobs:
           <<: *rm_virtualenv
       - run:
           <<: *run_cli
-      - store_test_results:
-          path: ./log
 
   deploy:
     docker:
