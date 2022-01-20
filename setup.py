@@ -1,17 +1,14 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 from setuptools import find_packages, setup
-from src import manifest
 
 setup(
-    name=manifest.name,
+    name='gitoo',
     use_scm_version=True,
     setup_requires=['setuptools_scm', 'pytest_runner'],
-    description=manifest.description,
-    author=manifest.author,
-    author_email=manifest.email,
-    url=manifest.url,
+    description='Odoo third party addons installer.',
+    author='numigi',
+    author_email='contact@numigi.com',
+    url='https://github.com/numigi/gitoo',
     packages=find_packages(exclude=('tests',)),
     entry_points='''
         [console_scripts]
