@@ -19,13 +19,12 @@ setup(
     ''',
     install_requires=[
         'gitpython',
-        'click>=7.0',
+        'click',
         'click-didyoumean',
         'crayons',
         'click-help-colors',
         'pyyaml',
-        # force the version of pystache as we use private variables of the lib.
-        'pystache==0.5.4',
+        'pystache',
     ],
     tests_require=[
         'pytest',
