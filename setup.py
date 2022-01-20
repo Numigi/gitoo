@@ -1,5 +1,5 @@
 
-from setuptools import find_packages, setup
+from setuptools import setup
 
 setup(
     name='gitoo',
@@ -9,7 +9,10 @@ setup(
     author='numigi',
     author_email='contact@numigi.com',
     url='https://github.com/numigi/gitoo',
-    packages=find_packages(exclude=('tests',)),
+    packages=["gitoo"],
+    package_dir={
+        "gitoo": "./src/gitoo",
+    },
     entry_points='''
         [console_scripts]
         gitoo=gitoo.cli:entry_point
