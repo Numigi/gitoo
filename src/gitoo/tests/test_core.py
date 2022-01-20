@@ -6,7 +6,7 @@ import os
 
 import mock
 
-from src import core
+from .. import core
 
 
 class TestTempRepo(unittest.TestCase):

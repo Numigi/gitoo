@@ -4,7 +4,7 @@ import shutil
 import tempfile
 import unittest
 
-from src import cli
+from .. import cli
 
 
 class TestInstallBase(unittest.TestCase):

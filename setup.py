@@ -1,31 +1,30 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
-from setuptools import find_packages, setup
-from src import manifest
+from setuptools import setup
 
 setup(
-    name=manifest.name,
+    name='gitoo',
     use_scm_version=True,
     setup_requires=['setuptools_scm', 'pytest_runner'],
-    description=manifest.description,
-    author=manifest.author,
-    author_email=manifest.email,
-    url=manifest.url,
-    packages=find_packages(exclude=('tests',)),
+    description='Odoo third party addons installer.',
+    author='numigi',
+    author_email='contact@numigi.com',
+    url='https://github.com/numigi/gitoo',
+    packages=["gitoo"],
+    package_dir={
+        "gitoo": "./src/gitoo",
+    },
     entry_points='''
         [console_scripts]
-        gitoo=src.cli:entry_point
+        gitoo=gitoo.cli:entry_point
     ''',
     install_requires=[
         'gitpython',
-        'click>=7.0',
+        'click',
         'click-didyoumean',
         'crayons',
         'click-help-colors',
         'pyyaml',
-        # force the version of pystache as we use private variables of the lib.
-        'pystache==0.5.4',
+        'pystache',
     ],
     tests_require=[
         'pytest',

@@ -12,7 +12,7 @@ import click
 from click_didyoumean import DYMMixin
 from click_help_colors import HelpColorsGroup
 
-from src import core
+from . import core
 
 logger = logging.getLogger('gitoo')
 logging.basicConfig()
@@ -85,7 +85,7 @@ def _install_all(destination='', conf_file='', lang=''):
     work_directory = os.path.dirname(os.path.realpath(conf_file))
 
     with open(conf_file, "r") as conf_data:
-        data = yaml.load(conf_data)
+        data = yaml.safe_load(conf_data)
         for addons in data:
             _install_one(
                 addons['url'],

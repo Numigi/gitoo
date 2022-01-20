@@ -3,7 +3,7 @@ version: 2.0
 requirements: &requirements
   name: Install requirements
   command: |
-    sudo pip install "pipenv>=9.0.3"
+    sudo pip install pipenv
     pipenv install -e .
 
 git_config: &git_config
@@ -24,9 +24,7 @@ coverage_report: &coverage_report
 
 coverage_report_codacy: &coverage_report_codacy
   name: Codacy Coverage
-  command: |
-    pipenv install codacy-coverage
-    pipenv run python-codacy-coverage -r ./coverage.xml
+  command: bash <(curl -Ls https://coverage.codacy.com/get.sh) report -l python -r ./coverage.xml
 
 rm_virtualenv: &rm_virtualenv
   name: Remove Virtualenv
@@ -51,11 +49,13 @@ quay_io_login: &quay_io_login
 jobs:
   python3:
     docker:
-      - image: circleci/python:3.5
+      - image: circleci/python:3.8
     steps:
       - checkout
       - run:
           <<: *requirements
+      - run:
+          <<: *pipenv_check
       - run:
           <<: *git_config
       - run:
@@ -66,10 +66,6 @@ jobs:
           <<: *rm_virtualenv
       - run:
           <<: *run_cli
-      - run:
-          <<: *pipenv_check
-      - store_test_results:
-          path: ./log
 
   deploy:
     docker:
