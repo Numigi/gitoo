@@ -24,9 +24,7 @@ coverage_report: &coverage_report
 
 coverage_report_codacy: &coverage_report_codacy
   name: Codacy Coverage
-  command: |
-    pipenv install codacy-coverage
-    pipenv run python-codacy-coverage -r ./coverage.xml
+  command: bash <(curl -Ls https://coverage.codacy.com/get.sh) report -l python -r ./coverage.xml
 
 rm_virtualenv: &rm_virtualenv
   name: Remove Virtualenv
@@ -57,6 +55,8 @@ jobs:
       - run:
           <<: *requirements
       - run:
+          <<: *pipenv_check
+      - run:
           <<: *git_config
       - run:
           <<: *run_tests
@@ -66,8 +66,6 @@ jobs:
           <<: *rm_virtualenv
       - run:
           <<: *run_cli
-      - run:
-          <<: *pipenv_check
       - store_test_results:
           path: ./log
 
