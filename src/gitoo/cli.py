@@ -12,7 +12,7 @@ import click
 from click_didyoumean import DYMMixin
 from click_help_colors import HelpColorsGroup
 
-from src import core
+from . import core
 
 logger = logging.getLogger('gitoo')
 logging.basicConfig()

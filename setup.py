@@ -12,7 +12,7 @@ setup(
     packages=find_packages(exclude=('tests',)),
     entry_points='''
         [console_scripts]
-        gitoo=src.cli:entry_point
+        gitoo=gitoo.cli:entry_point
     ''',
     install_requires=[
         'gitpython',
