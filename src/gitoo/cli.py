@@ -1,9 +1,3 @@
-#!/usr/bin/env python2
-"""
-Command line interface of the tool
-"""
-from __future__ import print_function, absolute_import
-
 import yaml
 import logging
 import os
