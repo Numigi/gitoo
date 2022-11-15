@@ -228,7 +228,7 @@ class Patch(object):
         remote_name = 'patch'
         commands = [
             "git remote add {} {}".format(remote_name, self.url),
-            "git fetch {} {}".format(remote_name, self.branch),
+            "git fetch --depth 1 {} {}".format(remote_name, self.branch),
             'git merge {} -m "patch"'.format(self.commit),
             "git remote remove {}".format(remote_name),
         ]
