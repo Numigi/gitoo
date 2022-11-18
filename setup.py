@@ -23,7 +23,7 @@ setup(
         'click-didyoumean',
         'crayons',
         'click-help-colors',
-        'pyyaml',
+        'pyyaml==5.4.1',
         'pystache',
     ],
     tests_require=[
