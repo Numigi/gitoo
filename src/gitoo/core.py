@@ -14,19 +14,35 @@ logger.setLevel(logging.INFO)
 
 
 @contextlib.contextmanager
-def temp_repo(url, branch, commit=''):
+def temp_repo(url, branch, commit='', includes=None):
     """ Clone a git repository inside a temporary folder, yield the folder then delete the folder.
 
     :param string url: url of the repo to clone.
     :param string branch: name of the branch to checkout to.
     :param string commit: Optional commit rev to checkout to. If mentioned, that take over the branch
+    :param list includes: Optional list of modules to include (enables sparse-checkout for bandwidth optimization)
     :return: yield the path to the temporary folder
     :rtype: string
     """
     tmp_folder = tempfile.mkdtemp()
-    git.Repo.clone_from(
-        url, tmp_folder, branch=branch
-    )
+
+    if includes:
+        # Use sparse-checkout to download only specified modules (optimizes bandwidth and CI time)
+        git_cmd = git.Git()
+        # Clone with partial clone (blob:none) to avoid downloading large files initially
+        git_cmd.clone(url, tmp_folder, branch=branch, filter='blob:none', no_checkout=True)
+
+        # Configure sparse-checkout to fetch only the specified modules
+        repo = git.Repo(tmp_folder)
+        repo.git.sparse_checkout('init', '--cone')
+        repo.git.sparse_checkout('set', *includes)
+
+        # Checkout the branch to materialize the sparse-checkout
+        repo.git.checkout(branch)
+    else:
+        # Standard full clone when no includes filter is specified
+        git.Repo.clone_from(url, tmp_folder, branch=branch)
+
     if commit:
         git_cmd = git.Git(tmp_folder)
         git_cmd.checkout(commit)
@@ -89,7 +105,7 @@ class Addon(object):
             "Installing %s@%s to %s",
             self.repo, self.commit if self.commit else self.branch, destination
         )
-        with temp_repo(self.repo, self.branch, self.commit) as tmp:
+        with temp_repo(self.repo, self.branch, self.commit, includes=self.include_modules) as tmp:
             self._apply_patches(tmp)
             self._delete_unrequired_languages(tmp)
             self._move_modules(tmp, destination)

@@ -1,0 +1,27 @@
+# Exemple de configuration gitoo avec sparse-checkout optimisé
+#
+# Utilisation du sparse-checkout pour optimiser le clone de gros monorepos
+# comme CybroAddons. Au lieu de télécharger 1.11 Go, seuls les modules
+# spécifiés seront téléchargés (quelques Mo).
+
+# Clone standard (comportement par défaut - télécharge tout)
+- url: https://github.com/OCA/website
+  branch: "14.0"
+  commit: 899a2219d35a259422ce916ba99947108bc3cc3c
+
+# Clone optimisé avec sparse-checkout (télécharge uniquement les modules listés)
+- url: https://github.com/CybroOdoo/CybroAddons
+  branch: "14.0"
+  includes:
+    - web_google_maps
+    - advanced_products_grid
+    # Ajoutez uniquement les modules dont vous avez besoin
+    # Cela réduit drastiquement le temps de clone et la bande passante utilisée
+
+# Autre exemple avec plusieurs modules OCA
+- url: https://github.com/OCA/hr
+  branch: "14.0"
+  includes:
+    - hr_experience
+    - hr_family
+    - hr_employee_relative
