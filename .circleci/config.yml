@@ -6,6 +6,7 @@ requirements: &requirements
     pip install pipenv
     pip install "setuptools_scm[toml]>=8.0" vcs-versioning
     pipenv install -e .
+    pipenv install pytest pytest-cov pytest-random-order mock
 
 git_config: &git_config
   name: Git Configuration
