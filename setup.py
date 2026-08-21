@@ -4,7 +4,7 @@ from setuptools import setup
 setup(
     name='gitoo',
     use_scm_version=True,
-    setup_requires=['setuptools_scm', 'pytest_runner'],
+    setup_requires=['setuptools_scm>=8.0', 'pytest_runner'],
     description='Odoo third party addons installer.',
     author='numigi',
     author_email='contact@numigi.com',
