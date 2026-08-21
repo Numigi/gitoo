@@ -45,7 +45,7 @@ pipenv_check: &pipenv_check
 jobs:
   python3:
     docker:
-      - image: circleci/python:3.8
+      - image: cimg/python:3.11
     steps:
       - checkout
       - run:
