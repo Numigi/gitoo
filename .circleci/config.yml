@@ -3,7 +3,7 @@ version: 2.0
 requirements: &requirements
   name: Install requirements
   command: |
-    sudo pip install pipenv
+    pip install pipenv
     pipenv install -e .
 
 git_config: &git_config
