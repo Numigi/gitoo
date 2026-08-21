@@ -4,6 +4,7 @@ requirements: &requirements
   name: Install requirements
   command: |
     pip install pipenv
+    pip install "setuptools_scm[toml]>=8.0" vcs-versioning
     pipenv install -e .
 
 git_config: &git_config
