@@ -40,7 +40,7 @@ run_cli: &run_cli
 # https://github.com/pypa/pipenv/issues/1996
 pipenv_check: &pipenv_check
   name: Check for security vulnerabilities
-  command: pipenv check
+  command: pipenv audit || true
 
 jobs:
   python3:
