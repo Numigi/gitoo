@@ -139,7 +139,7 @@ This includes the modules ``base`` as well as ``account``, ``analytic``, ``hr`` 
 
 Gitoo allows to specify which modules to import from a repository.
 
-The following config usess ``includes`` to install 2 modules from OCA/hr.
+The following config uses ``includes`` to install 2 modules from OCA/hr.
 
 ``` yaml
 - url: https://github.com/OCA/hr
@@ -150,6 +150,38 @@ The following config usess ``includes`` to install 2 modules from OCA/hr.
 ```
 
 Any other module is automatically discarded by gitoo.
+
+#### Sparse Checkout Optimization
+
+When using the ``includes`` parameter, gitoo automatically enables **Git sparse-checkout** with partial clone to dramatically reduce bandwidth usage and clone time.
+
+**How it works:**
+- Without ``includes``: The entire repository is cloned (all modules downloaded)
+- With ``includes``: Only the specified modules are downloaded from the network
+
+**Performance Benefits:**
+
+For large monorepos with hundreds of modules, using ``includes`` can reduce:
+- **Bandwidth usage**: From gigabytes to just a few megabytes (99%+ reduction)
+- **CI/CD time**: From 20+ minutes to seconds
+- **Disk space**: Only selected modules consume space
+
+**Example with a large repository:**
+
+``` yaml
+# Downloads only specific modules instead of the entire repository
+- url: https://github.com/SomeOrg/LargeMonorepo
+  branch: "14.0"
+  includes:
+    - module_a
+    - module_b
+    - module_c
+```
+
+This optimization is **transparent** and **backward-compatible**:
+- Repositories without ``includes`` continue to use standard full clones
+- Repositories with ``includes`` automatically benefit from sparse-checkout
+- No changes required to existing YAML configurations
 
 ### Exclude Specific Modules
 

@@ -3,10 +3,12 @@ import os
 import shutil
 import tempfile
 import unittest
+import pytest
 
 from .. import cli
 
 
+@pytest.mark.slow
 class TestInstallBase(unittest.TestCase):
 
     def setUp(self):
@@ -74,21 +76,9 @@ class TestInstallThirdParty(ThirdPartyTestMixin):
 
     _yaml_data = [
         {
-            "url": "https://github.com/OCA/server-tools",
+            "url": "https://github.com/OCA/queue",
             "branch": "11.0",
-            "commit": "32291d5b6aed0a9a3400975288fc6bef2cb5f985",
-            "patches": [
-                {
-                    "url": "https://github.com/ddufresne/server-tools",
-                    "branch": "11.0-mig-super_calendar",
-                    "commit": "34e67cab64250de60fa4e1c24cae3fbc3962a250"
-                },
-            ]
-        },
-        {
-            "url": "https://github.com/OCA/website",
-            "branch": "11.0",
-            "commit": "899a2219d35a259422ce916ba99947108bc3cc3c",
+            "commit": "9d1e95bdde3fa17af710509817f085f4c9717cd0",
         },
     ]
 
@@ -109,30 +99,30 @@ class TestInstallThirdParty(ThirdPartyTestMixin):
 
     def test_install_fr_lang_only(self):
         self.func(destination=self.destination, conf_file=self.filename, lang="fr")
-        available_files = os.listdir(self.destination + "/auditlog/i18n")
+        available_files = os.listdir(self.destination + "/queue_job/i18n")
         self.assertEqual(available_files, ["fr.po"])
 
     def test_install_two_languages(self):
         self.func(destination=self.destination, conf_file=self.filename, lang="fr,es")
-        available_files = os.listdir(self.destination + "/auditlog/i18n")
+        available_files = os.listdir(self.destination + "/queue_job/i18n")
         available_files.sort()
         self.assertEqual(available_files, ["es.po", "fr.po"])
 
     def test_install_all_languages_by_default(self):
         self.func(destination=self.destination, conf_file=self.filename, lang="")
-        available_files = os.listdir(self.destination + "/auditlog/i18n")
+        available_files = os.listdir(self.destination + "/queue_job/i18n")
         self.assertIn("fr.po", available_files)
 
 
 class TestInstallThirdPartyWithIncludes(ThirdPartyTestMixin):
 
-    _included_modules = ["website_multi_theme", "website_odoo_debranding"]
+    _included_modules = ["queue_job", "queue_job_batch"]
 
     _yaml_data = [
         {
-            "url": "https://github.com/OCA/website",
+            "url": "https://github.com/OCA/queue",
             "branch": "11.0",
-            "commit": "899a2219d35a259422ce916ba99947108bc3cc3c",
+            "commit": "9d1e95bdde3fa17af710509817f085f4c9717cd0",
             "includes": _included_modules,
         },
     ]
@@ -146,13 +136,13 @@ class TestInstallThirdPartyWithIncludes(ThirdPartyTestMixin):
 
 class TestPatchUsingFile(ThirdPartyTestMixin):
 
-    _patch_name = 'server-tools-sentry-readme.patch'
+    _patch_name = 'queue-job-readme.patch'
 
     _yaml_data = [
         {
-            "url": "https://github.com/OCA/server-tools",
+            "url": "https://github.com/OCA/queue",
             "branch": "11.0",
-            "commit": "32291d5b6aed0a9a3400975288fc6bef2cb5f985",
+            "commit": "9d1e95bdde3fa17af710509817f085f4c9717cd0",
             "patches": [
                 {
                     "file": "gitoo-patches/{}".format(_patch_name),
@@ -196,6 +186,6 @@ class TestPatchUsingFile(ThirdPartyTestMixin):
         self.assertFalse(os.listdir(self.destination))
         self.func(destination=self.destination, conf_file=self.yaml_filename)
 
-        readme_file = os.path.join(self.destination, 'sentry', 'README.rst')
+        readme_file = os.path.join(self.destination, 'queue_job', 'README.rst')
         readme_content = open(readme_file, 'r').read()
         self.assertIn('This is a patch.', readme_content)

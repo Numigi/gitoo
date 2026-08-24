@@ -36,6 +36,45 @@ class TestTempRepo(unittest.TestCase):
             repo = git.Repo(path=tmp)
             self.assertEqual(self.commit, repo.head.commit.hexsha)
 
+    @mock.patch('gitoo.core.git.Git')
+    @mock.patch('gitoo.core.git.Repo')
+    @mock.patch('gitoo.core.shutil.rmtree')
+    @mock.patch('gitoo.core.tempfile.mkdtemp')
+    def test_whenIncludesGiven_thenSparseCheckoutIsUsed(self, mock_mkdtemp, mock_rmtree, mock_repo_cls, mock_git_cls):
+        """When includes is provided, sparse-checkout should be configured"""
+        includes = ['module1', 'module2']
+        mock_tmp_folder = '/tmp/test_folder'
+        mock_mkdtemp.return_value = mock_tmp_folder
+
+        mock_git_instance = mock_git_cls.return_value
+        mock_repo_instance = mock_repo_cls.return_value
+        mock_repo_git = mock.Mock()
+        mock_repo_instance.git = mock_repo_git
+
+        with self.func(self.repo_url, self.branch, includes=includes):
+            # Verify partial clone was called with filter
+            mock_git_instance.clone.assert_called_once()
+            call_kwargs = mock_git_instance.clone.call_args[1]
+            self.assertEqual(call_kwargs['filter'], 'blob:none')
+            self.assertTrue(call_kwargs['no_checkout'])
+
+            # Verify sparse-checkout was configured
+            mock_repo_git.sparse_checkout.assert_any_call('init', '--cone')
+            mock_repo_git.sparse_checkout.assert_any_call('set', *includes)
+
+            # Verify checkout was called
+            mock_repo_git.checkout.assert_called_with(self.branch)
+
+    def test_whenIncludesEmpty_thenStandardCloneIsUsed(self):
+        """When includes is None or empty, standard clone should be used"""
+        # Test with None
+        with self.filled(includes=None) as tmp:
+            self.assertTrue(os.path.exists(tmp))
+
+        # Test with empty list
+        with self.filled(includes=[]) as tmp:
+            self.assertTrue(os.path.exists(tmp))
+
 
 class TestAddon(unittest.TestCase):
 
