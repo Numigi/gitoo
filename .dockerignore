@@ -1,4 +1,4 @@
-.git
+# Don't ignore .git - needed by setuptools_scm for versioning
 .gitignore
 .eggs
 *.egg-info
@@ -14,7 +14,5 @@ build
 log
 coverage.xml
 .circleci
-README.md
 example_sparse_checkout.yml
 test_*.yml
-*.md
