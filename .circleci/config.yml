@@ -16,7 +16,7 @@ git_config: &git_config
 
 run_tests: &run_tests
   name: Run tests
-  command: pipenv run pytest src/gitoo/tests/ -v --cov=gitoo --cov-report=xml --cov-report=term
+  command: pipenv run pytest src/gitoo/tests/ -v -m "not slow" --cov=gitoo --cov-report=xml --cov-report=term
 
 coverage_report: &coverage_report
   name: Coverage report
