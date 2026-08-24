@@ -16,7 +16,10 @@ RUN mkdir ${GITOO_HOME}
 # Copy gitoo source code
 COPY . ${GITOO_HOME}
 
-# Install gitoo
+# Install setuptools_scm and dependencies first
+RUN pip install --no-cache-dir "setuptools_scm>=8.0" setuptools wheel
+
+# Install gitoo (setuptools_scm will use .git to determine version)
 RUN pip install --no-cache-dir ${GITOO_HOME}
 
 # Set entrypoint
