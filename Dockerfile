@@ -1,0 +1,26 @@
+FROM python:3.11-slim
+
+LABEL maintainer="numigi <contact@numigi.com>"
+
+# Install git (required by gitoo)
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends git-core && \
+    git config --global user.name "Gitoo" && \
+    git config --global user.email "root@localhost" && \
+    rm -rf /var/lib/apt/lists/*
+
+# Set up gitoo home
+ENV GITOO_HOME=/home/gitoo/
+RUN mkdir ${GITOO_HOME}
+
+# Copy gitoo source code
+COPY . ${GITOO_HOME}
+
+# Install gitoo
+RUN pip install --no-cache-dir ${GITOO_HOME}
+
+# Set entrypoint
+ENTRYPOINT ["gitoo"]
+
+# Default command
+CMD ["install-all", "--conf_file", "gitoo.yml", "--destination", "/mnt/third-party-addons"]
