@@ -13,8 +13,10 @@ RUN apt-get update && \
 ENV GITOO_HOME=/home/gitoo/
 RUN mkdir ${GITOO_HOME}
 
-# Copy gitoo source code
-COPY . ${GITOO_HOME}
+# Copy only necessary files for gitoo installation
+COPY src ${GITOO_HOME}/src
+COPY .git ${GITOO_HOME}/.git
+COPY setup.cfg setup.py pyproject.toml ${GITOO_HOME}/
 
 # Install setuptools_scm and dependencies first
 RUN pip install --no-cache-dir "setuptools_scm>=8.0" setuptools wheel
