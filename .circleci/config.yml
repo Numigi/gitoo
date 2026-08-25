@@ -70,6 +70,7 @@ jobs:
       - image: cimg/python:3.11
     steps:
       - checkout
+      - setup_remote_docker
       - run:
           <<: *requirements
       - run:
@@ -87,14 +88,8 @@ jobs:
           name: Upload to Pypi using Twine
           command: |
             pipenv install twine
-            pipenv run twine upload dist/*
+            pipenv run twine upload dist/* || true
 
-  docker-build:
-    docker:
-      - image: cimg/base:stable
-    steps:
-      - checkout
-      - setup_remote_docker
       - run:
           name: Build Docker image
           command: |
@@ -104,7 +99,7 @@ jobs:
       - run:
           name: Push to Quay.io
           command: |
-            echo "$QUAY_PASSWORD" | docker login quay.io -u "$QUAY_USERNAME" --password-stdin
+            echo "${QUAY_TOKEN}" | docker login quay.io -u "${QUAY_USER}" --password-stdin
             TAG_VERSION=${CIRCLE_TAG}
             docker push quay.io/numigi/gitoo:${TAG_VERSION}
             docker push quay.io/numigi/gitoo:latest
@@ -118,14 +113,7 @@ workflows:
             tags:
               only: /.*/
       - deploy:
-          requires:
-            - python3
-          filters:
-            tags:
-              only: /[0-9]+(\.[0-9]+)*/
-            branches:
-              ignore: /.*/
-      - docker-build:
+          context: quay.io
           requires:
             - python3
           filters:
